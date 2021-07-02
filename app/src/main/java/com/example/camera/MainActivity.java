@@ -299,7 +299,9 @@ public class MainActivity extends AppCompatActivity implements FilterDemoAdapter
         sticker.setTypeface(font);
 
 
+
         stickerView.addSticker(sticker);
+        //test123
 
     }
 
