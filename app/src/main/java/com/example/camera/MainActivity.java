@@ -1,6 +1,5 @@
 package com.example.camera;
 
-import android.content.DialogInterface;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -8,6 +7,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.Layout;
 import android.util.Log;
@@ -28,6 +28,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.camera.model.FilterData;
 import com.xiaopo.flying.sticker.BitmapStickerIcon;
 import com.xiaopo.flying.sticker.DeleteIconEvent;
+import com.xiaopo.flying.sticker.DrawableSticker;
 import com.xiaopo.flying.sticker.FlipHorizontallyEvent;
 import com.xiaopo.flying.sticker.Sticker;
 import com.xiaopo.flying.sticker.StickerView;
@@ -66,7 +67,7 @@ public class MainActivity extends AppCompatActivity implements FilterDemoAdapter
     Bitmap mBitmap;
     SeekBar seekBar;
 
-    private ImageView btnAddText, btnEditText;
+    private ImageView btnAddText, btnEditText, btnAddSticker;
     private boolean isVisibility = true;
     private int currentFont;
     StickerView stickerView;
@@ -91,17 +92,6 @@ public class MainActivity extends AppCompatActivity implements FilterDemoAdapter
         setContentView(R.layout.activity_main);
         initView();
         onActionEvent();
-
-
-
-
-
-
-
-
-
-
-
 
 
     }
@@ -137,28 +127,31 @@ public class MainActivity extends AppCompatActivity implements FilterDemoAdapter
             }
 
         });
+
         btnEditText.setOnClickListener(v -> {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("Title");
 
             final EditText input = new EditText(this);
             builder.setView(input);
-            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    String inputText = input.getText().toString();
-                    addTextSticker(inputText);
-                    Log.e("~~~", inputText);
-                }
+            builder.setPositiveButton("OK", (dialog, which) -> {
+                String inputText = input.getText().toString();
+                addTextSticker(inputText);
+                Log.e("~~~", inputText);
             });
-            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.cancel();
-                }
-            });
+            builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
 
             builder.show();
+        });
+
+        btnAddSticker.setOnClickListener(v -> {
+            Drawable drawable =
+                    ContextCompat.getDrawable(this, R.drawable.natural);
+            Drawable drawable1 =
+                    ContextCompat.getDrawable(this, R.drawable.natural1);
+            stickerView.addSticker(new DrawableSticker(drawable));
+            stickerView.addSticker(new DrawableSticker(drawable1));
+
         });
 
         stickerView.setOnStickerOperationListener(new StickerView.OnStickerOperationListener() {
@@ -170,11 +163,11 @@ public class MainActivity extends AppCompatActivity implements FilterDemoAdapter
             @Override
             public void onStickerClicked(@NonNull Sticker sticker) {
                 //stickerView.removeAllSticker();
-                if (sticker instanceof TextSticker) {
-                    ((TextSticker) sticker).setTextColor(Color.RED);
-                    stickerView.replace(sticker);
-                    stickerView.invalidate();
-                }
+//                if (sticker instanceof TextSticker) {
+//                    ((TextSticker) sticker).setTextColor(Color.RED);
+//                    stickerView.replace(sticker);
+//                    stickerView.invalidate();
+//                }
                 Log.d(TAG, "onStickerClicked");
             }
 
@@ -215,7 +208,8 @@ public class MainActivity extends AppCompatActivity implements FilterDemoAdapter
         btnAddText= findViewById(R.id.btnAddText);
         stickerView= findViewById(R.id.stickerView);
         mImageView = (ImageGLSurfaceView) findViewById(R.id.image);
-        btnEditText =  findViewById(R.id.image_edit_text);
+        btnEditText =  findViewById(R.id.btnEditText);
+        btnAddSticker =  findViewById(R.id.btnAddSticker);
         seekBar = (SeekBar) findViewById(R.id.globalRestoreSeekBar);
         constraintLayoutTextStyle =  findViewById(R.id.constraintLayoutTextStyle);
 
@@ -234,7 +228,7 @@ public class MainActivity extends AppCompatActivity implements FilterDemoAdapter
             }
         });
         //todo hashcode
-        mCurrentConfig ="@adjust lut late_sunset.png";
+//        mCurrentConfig ="@adjust lut late_sunset.png";
 
         //set up sticker view
         //currently you can config your own icons and icon event
@@ -260,6 +254,9 @@ public class MainActivity extends AppCompatActivity implements FilterDemoAdapter
 
 
         stickerView.setIcons(Arrays.asList(deleteIcon, zoomIcon, flipIcon, heartIcon));
+
+
+
 
         //default icon layout
         //stickerView.configDefaultIcons();
@@ -290,8 +287,20 @@ public class MainActivity extends AppCompatActivity implements FilterDemoAdapter
 
     }
     private void addTextSticker(String text) {
-        final TextSticker sticker = new TextSticker(this);
-        sticker.setText(text);
+//        final TextSticker sticker = new TextSticker(this);
+//        sticker.setText(text);
+//        sticker.setTextColor(Color.BLUE);
+//        sticker.setTextAlign(Layout.Alignment.ALIGN_CENTER);
+//        sticker.resizeText();
+//        Typeface font = ResourcesCompat.getFont(this, currentFont);
+//        sticker.setTypeface(font);
+
+//        stickerView.addSticker(sticker);
+
+
+
+        TextSticker sticker = new TextSticker(this);
+        sticker.setText(text+"");
         sticker.setTextColor(Color.BLUE);
         sticker.setTextAlign(Layout.Alignment.ALIGN_CENTER);
         sticker.resizeText();
@@ -299,9 +308,8 @@ public class MainActivity extends AppCompatActivity implements FilterDemoAdapter
         sticker.setTypeface(font);
 
 
-
         stickerView.addSticker(sticker);
-        //test123
+
 
     }
 
