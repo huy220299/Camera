@@ -67,7 +67,7 @@ public class FilterDemoAdapter extends RecyclerView.Adapter<FilterDemoAdapter.Vi
         });
         holder.img_name.setText(currentItem.getName());
         holder.itemView.setOnClickListener(v -> {
-            itemClickListener.onClick(v, position);
+            itemClickListener.onClick(v, position, "filter");
         });
     }
 
@@ -92,7 +92,7 @@ public class FilterDemoAdapter extends RecyclerView.Adapter<FilterDemoAdapter.Vi
 
     }
     interface ItemClickListener {
-        void onClick(View view, int position);
+        void onClick(View view, int position, String type);
     }
 
 

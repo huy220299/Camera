@@ -1,3 +1,17 @@
 <resources>
     <string name="app_name">Camera</string>
+    <string name="DefaultString">Abc</string>
+    <string-array name="listColor">
+        <item>#000000</item>
+        <item>#FF0000</item>
+        <item>#00FF00</item>
+        <item>#0000FF</item>
+        <item>#FFFF00</item>
+        <item>#00FFFF</item>
+        <item>#FF00FF</item>
+        <item>#C0C0C0</item>
+        <item>#808080</item>
+        <item>#800000</item>
+        <item>#008000</item>
+    </string-array>
 </resources>

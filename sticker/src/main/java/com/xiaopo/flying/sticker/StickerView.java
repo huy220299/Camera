@@ -563,7 +563,7 @@ public class StickerView extends RelativeLayout {
     for (int i = 0; i < stickers.size(); i++) {
       Sticker sticker = stickers.get(i);
       if (sticker != null) {
-        transformSticker(sticker);
+//        transformSticker(sticker);
       }
     }
   }

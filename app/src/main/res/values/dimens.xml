@@ -3,5 +3,5 @@
     <dimen name="option_height">60dp</dimen>
     <dimen name="text_size_filter">10sp</dimen>
     <dimen name="icon_size">20dp</dimen>
-    <dimen name="text_size_style">16sp</dimen>
+    <dimen name="text_size_style">20sp</dimen>
 </resources>

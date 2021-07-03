@@ -1,6 +1,5 @@
 package com.example.camera;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.util.DisplayMetrics;
@@ -10,18 +9,18 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class TextStyleAdapter extends RecyclerView.Adapter<TextStyleAdapter.ViewHolder> {
+import java.util.List;
+
+public class ListTextStyleAdapter extends RecyclerView.Adapter<ListTextStyleAdapter.ViewHolder> {
     Context context;
-    String addedString;
-    FilterDemoAdapter.ItemClickListener itemClickListener;
-    int[] listStyle;
-    public  TextStyleAdapter( String addedString, int[] listStyle, FilterDemoAdapter.ItemClickListener itemClickListener){
+
+    ItemClickListener itemClickListener;
+    List<String> listStyle;
+    public  ListTextStyleAdapter( List<String> listStyle, ItemClickListener itemClickListener){
         this.listStyle =listStyle;
         this.itemClickListener = itemClickListener;
-        this.addedString = addedString;
     }
     @NonNull
     @Override
@@ -35,23 +34,28 @@ public class TextStyleAdapter extends RecyclerView.Adapter<TextStyleAdapter.View
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
         DisplayMetrics displaymetrics = new DisplayMetrics();
-        ((Activity) context).getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
-        int devicewidth = displaymetrics.widthPixels /5;
-        holder.itemView.getLayoutParams().width = devicewidth;
+//        ((Activity) context).getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
+//
+//        int devicewidth = displaymetrics.widthPixels /4;
+//        int deviceheight = displaymetrics.heightPixels / 10;
+//        holder.itemView.getLayoutParams().width = devicewidth;
+//        holder.itemView.getLayoutParams().height = deviceheight;
 
-            holder.textView.setText(addedString);
+        holder.textView.setText(R.string.DefaultString);
 
-        Typeface font = ResourcesCompat.getFont(context, listStyle[position]);
+//        Typeface font = ResourcesCompat.getFont(context, listStyle.get(position));
+//        holder.textView.setTypeface(font);
+        Typeface font = Typeface.createFromAsset(context.getAssets(),"font/"+  listStyle.get(position));
         holder.textView.setTypeface(font);
-
-            holder.itemView.setOnClickListener(v -> {
-                itemClickListener.onClick(v,position, "textStyle");
-            });
+//        holder.textView.setTypeface(font,Typeface.BOLD);
+        holder.itemView.setOnClickListener(v -> {
+            itemClickListener.onClick(v,position,"");
+        });
     }
 
     @Override
     public int getItemCount() {
-        return listStyle.length;
+        return listStyle.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -68,4 +72,8 @@ public class TextStyleAdapter extends RecyclerView.Adapter<TextStyleAdapter.View
 
 
     }
+    interface ItemClickListener {
+        void onClick(View view, int position, String type);
+    }
+
 }

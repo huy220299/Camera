@@ -21,7 +21,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -45,7 +44,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements FilterDemoAdapter.ItemClickListener {
+public class MainActivity extends AppCompatActivity implements FilterDemoAdapter.ItemClickListener, BottomSheetAddText.Callback {
     public  static String TAG = "MainActivity";
 
     private String mCurrentConfig;
@@ -83,6 +82,8 @@ public class MainActivity extends AppCompatActivity implements FilterDemoAdapter
     TextStyleAdapter adapterTextStyle;
     private ConstraintLayout constraintLayoutTextStyle;
 
+    BottomSheetAddText bottomSheetAddText;
+
 
 
 
@@ -116,15 +117,22 @@ public class MainActivity extends AppCompatActivity implements FilterDemoAdapter
             }
         });
         btnAddText.setOnClickListener(v -> {
-            if (isVisibility){
-                recyclerView.setVisibility(View.GONE);
-                constraintLayoutTextStyle.setVisibility(View.VISIBLE);
-                isVisibility = false;
-            }else {
-                recyclerView.setVisibility(View.VISIBLE);
-                constraintLayoutTextStyle.setVisibility(View.GONE);
-                isVisibility =true;
-            }
+
+            Bundle bundle = new Bundle();
+            bottomSheetAddText = new BottomSheetAddText();
+            bottomSheetAddText.show(getSupportFragmentManager(), "ModalBottomSheet");
+            bottomSheetAddText.setArguments(bundle);
+
+//
+//            if (isVisibility){
+//                recyclerView.setVisibility(View.GONE);
+//                constraintLayoutTextStyle.setVisibility(View.VISIBLE);
+//                isVisibility = false;
+//            }else {
+//                recyclerView.setVisibility(View.VISIBLE);
+//                constraintLayoutTextStyle.setVisibility(View.GONE);
+//                isVisibility =true;
+//            }
 
         });
 
@@ -136,7 +144,7 @@ public class MainActivity extends AppCompatActivity implements FilterDemoAdapter
             builder.setView(input);
             builder.setPositiveButton("OK", (dialog, which) -> {
                 String inputText = input.getText().toString();
-                addTextSticker(inputText);
+//                addTextSticker(inputText);
                 Log.e("~~~", inputText);
             });
             builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
@@ -248,12 +256,10 @@ public class MainActivity extends AppCompatActivity implements FilterDemoAdapter
                 BitmapStickerIcon.RIGHT_TOP);
         flipIcon.setIconEvent(new FlipHorizontallyEvent());
 
-        BitmapStickerIcon heartIcon =
-                new BitmapStickerIcon(ContextCompat.getDrawable(this, R.drawable.favorite),
-                        BitmapStickerIcon.LEFT_BOTTOM);
 
 
-        stickerView.setIcons(Arrays.asList(deleteIcon, zoomIcon, flipIcon, heartIcon));
+
+        stickerView.setIcons(Arrays.asList(deleteIcon, zoomIcon, flipIcon));
 
 
 
@@ -284,32 +290,22 @@ public class MainActivity extends AppCompatActivity implements FilterDemoAdapter
     private void addSticker(){
             stickerView.addSticker(new TextSticker(getApplicationContext()).setText("Hello").resizeText().setMaxTextSize(14));
 
-
     }
-    private void addTextSticker(String text) {
-//        final TextSticker sticker = new TextSticker(this);
-//        sticker.setText(text);
-//        sticker.setTextColor(Color.BLUE);
-//        sticker.setTextAlign(Layout.Alignment.ALIGN_CENTER);
-//        sticker.resizeText();
-//        Typeface font = ResourcesCompat.getFont(this, currentFont);
-//        sticker.setTypeface(font);
-
-//        stickerView.addSticker(sticker);
-
-
-
+    private void addTextSticker(String text, String textStyle,int align, String stringColor) {
         TextSticker sticker = new TextSticker(this);
-        sticker.setText(text+"");
-        sticker.setTextColor(Color.BLUE);
-        sticker.setTextAlign(Layout.Alignment.ALIGN_CENTER);
+        sticker.setText(text);
+        sticker.setTextColor(Color.parseColor(stringColor));
+        if (align==1){
+            sticker.setTextAlign(Layout.Alignment.ALIGN_CENTER);
+        }else if (align==2){
+            sticker.setTextAlign(Layout.Alignment.ALIGN_OPPOSITE);
+        }else {
+            sticker.setTextAlign(Layout.Alignment.ALIGN_NORMAL);
+        }
         sticker.resizeText();
-        Typeface font = ResourcesCompat.getFont(this, currentFont);
+        Typeface font = Typeface.createFromAsset(getAssets(),"font/"+ textStyle);
         sticker.setTypeface(font);
-
-
         stickerView.addSticker(sticker);
-
 
     }
 
@@ -328,7 +324,6 @@ public class MainActivity extends AppCompatActivity implements FilterDemoAdapter
     public CGENativeLibrary.LoadImageCallback mLoadImageCallback = new CGENativeLibrary.LoadImageCallback() {
 
         //Notice: the 'name' passed in is just what you write in the rule, e.g: 1.jpg
-        //注意， 这里回传的name不包含任何路径名， 仅为具体的图片文件名如 1.jpg
         @Override
         public Bitmap loadImage(String name, Object arg) {
 
@@ -357,7 +352,7 @@ public class MainActivity extends AppCompatActivity implements FilterDemoAdapter
     };
 
     @Override
-    public void onClick(View view, int position) {
+    public void onClick(View view, int position, String type) {
         try {
             currentFont = fontList[position];
         }catch (Exception e){
@@ -386,5 +381,27 @@ public class MainActivity extends AppCompatActivity implements FilterDemoAdapter
         canvas.drawText(watermark, 20, 25, paint);
 
         return result;
+    }
+
+    @Override
+    public void onButtonClicked(View view, Bundle bundle) {
+
+       switch (view.getId()){
+           case R.id.btnCancel:
+               bottomSheetAddText.dismiss();
+               break;
+           case R.id.btnDone:
+               String text = bundle.getString("text","");
+               String textStyle = bundle.getString("textStyle","regular.ttf");
+               String stringColor = bundle.getString("textColor","#000000");
+               int align = bundle.getInt("align",1);
+
+               if (!text.equals("")){
+                   addTextSticker(text, textStyle,align, stringColor);
+               }
+                bottomSheetAddText.dismiss();
+
+       }
+
     }
 }
