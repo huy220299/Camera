@@ -1,11 +1,22 @@
 package com.example.camera;
 
+import android.content.Context;
 import android.content.res.AssetManager;
+import android.content.res.Resources;
+import android.graphics.Insets;
+import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.Size;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowInsets;
+import android.view.WindowManager;
+import android.view.WindowMetrics;
 import android.widget.EditText;
 import android.widget.ImageView;
 
@@ -19,11 +30,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class TestActivity extends AppCompatActivity implements ListTextStyleAdapter.ItemClickListener {
-    EditText editText;
-    ImageView btnDone, btnCancel;
-    RecyclerView recyclerView;
-    ListTextStyleAdapter adapter;
+public class TestActivity extends AppCompatActivity  {
+
 
 
 
@@ -31,45 +39,10 @@ public class TestActivity extends AppCompatActivity implements ListTextStyleAdap
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.bottom_sheet_layout);
-        editText = findViewById(R.id.edtAddedText);
-//        btnDone = findViewById(R.id.btnDone);
-//        btnCancel = findViewById(R.id.btnCancel);
-
-        btnDone.setOnClickListener(v -> {
-            Log.e("~~~", editText.getText().toString());
-        });
-        btnCancel.setOnClickListener(v -> {
-           editText.setGravity(Gravity.CENTER_HORIZONTAL);
-            editText.setTypeface(null, Typeface.BOLD);
-        });
-        List<String > listFonts = getFontFromAssets();
-        recyclerView = findViewById(R.id.recyclerView);
-        adapter = new ListTextStyleAdapter(listFonts,this);
-        recyclerView.setAdapter(adapter);
-        GridLayoutManager layoutManager=new GridLayoutManager(this,3);
-        recyclerView.setLayoutManager(layoutManager);
-
-
-    }
-    public List<String> getFontFromAssets(){
-        List<String > list = new ArrayList<>();
-        AssetManager assetManager;
-        InputStream inputStream;
-        try {
-            assetManager = getAssets();
-            list = Arrays.asList(assetManager.list("font"));
-
-            Log.e("~~~", list.get(0));
-
-        } catch (IOException e) {
-
-        }
-        return list;
 
     }
 
-    @Override
-    public void onClick(View view, int position, String type) {
 
-    }
+
+
 }

@@ -5,10 +5,15 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Insets;
 import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowInsets;
+import android.view.WindowMetrics;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -24,13 +29,14 @@ public class FilterDemoAdapter extends RecyclerView.Adapter<FilterDemoAdapter.Vi
 
     ItemClickListener itemClickListener;
 
-
+    Activity activity;
     List<FilterData> listFilter;
     Context context;
 
     public FilterDemoAdapter(List<FilterData> listFilter, ItemClickListener itemClickListener) {
         this.listFilter = listFilter;
         this.itemClickListener = itemClickListener;
+
     }
 
     @Override
@@ -43,10 +49,12 @@ public class FilterDemoAdapter extends RecyclerView.Adapter<FilterDemoAdapter.Vi
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
 
+
         DisplayMetrics displaymetrics = new DisplayMetrics();
         ((Activity) context).getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
         //if you need three fix imageview in width
         int devicewidth = displaymetrics.widthPixels /5;
+        Log.e("~~~",displaymetrics.widthPixels+"");
 
         //if you need 4-5-6 anything fix imageview in height
         int deviceheight = displaymetrics.heightPixels / 4;
