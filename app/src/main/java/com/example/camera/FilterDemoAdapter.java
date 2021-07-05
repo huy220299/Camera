@@ -79,7 +79,7 @@ public class FilterDemoAdapter extends RecyclerView.Adapter<FilterDemoAdapter.Vi
 
 
     }
-    interface ItemClickListener {
+    public interface ItemClickListener {
         void onClick(View view, int position, String type);
     }
 

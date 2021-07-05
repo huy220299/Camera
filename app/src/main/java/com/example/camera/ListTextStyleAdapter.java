@@ -72,8 +72,8 @@ public class ListTextStyleAdapter extends RecyclerView.Adapter<ListTextStyleAdap
 
 
     }
-    interface ItemClickListener {
-        void onClick(View view, int position, String type);
+    public interface ItemClickListener {
+        public void onClick(View view, int position, String type);
     }
 
 }

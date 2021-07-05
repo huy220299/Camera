@@ -9,27 +9,28 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Layout;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
+import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.camera.fragment.BottomSheetAddSticker;
+import com.example.camera.fragment.BottomSheetAddText;
 import com.example.camera.model.FilterData;
+import com.example.camera.ultis.FileUtil;
 import com.xiaopo.flying.sticker.BitmapStickerIcon;
 import com.xiaopo.flying.sticker.DeleteIconEvent;
-import com.xiaopo.flying.sticker.DrawableSticker;
 import com.xiaopo.flying.sticker.FlipHorizontallyEvent;
-import com.xiaopo.flying.sticker.Sticker;
 import com.xiaopo.flying.sticker.StickerView;
 import com.xiaopo.flying.sticker.TextSticker;
 import com.xiaopo.flying.sticker.ZoomIconEvent;
@@ -37,13 +38,14 @@ import com.xiaopo.flying.sticker.ZoomIconEvent;
 import org.wysaid.nativePort.CGENativeLibrary;
 import org.wysaid.view.ImageGLSurfaceView;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements FilterDemoAdapter.ItemClickListener, BottomSheetAddText.Callback {
+public class MainActivity extends AppCompatActivity implements FilterDemoAdapter.ItemClickListener, BottomSheetAddText.Callback, BottomSheetAddSticker.Callback {
     public  static String TAG = "MainActivity";
 
     private String mCurrentConfig;
@@ -84,6 +86,7 @@ public class MainActivity extends AppCompatActivity implements FilterDemoAdapter
     TextStyleAdapter adapterTextStyle;
 
     BottomSheetAddText bottomSheetAddText;
+    BottomSheetAddSticker bottomSheetAddSticker;
 
 
 
@@ -117,11 +120,7 @@ public class MainActivity extends AppCompatActivity implements FilterDemoAdapter
             @Override
             public void onClick(View v) {
 
-                photoView.setImageBitmap(mImageView.getBitmapData());
-                mImageView.setVisibility(View.GONE);
-
-
-                 photoView.setImageBitmap(loadBitmapFromView(stickerView));
+                new getBitmap().execute();
 
 /*
                 Handler handler =  new Handler();
@@ -174,63 +173,44 @@ public class MainActivity extends AppCompatActivity implements FilterDemoAdapter
 
 
         btnAddSticker.setOnClickListener(v -> {
-            Drawable drawable =
-                    ContextCompat.getDrawable(this, R.drawable.natural);
-            Drawable drawable1 =
-                    ContextCompat.getDrawable(this, R.drawable.natural1);
-            stickerView.addSticker(new DrawableSticker(drawable));
-            stickerView.addSticker(new DrawableSticker(drawable1));
+
+            Bundle bundle = new Bundle();
+            bottomSheetAddSticker = new BottomSheetAddSticker();
+            bottomSheetAddSticker.show(getSupportFragmentManager(), "ModalBottomSheet");
+            bottomSheetAddSticker.setArguments(bundle);
 
         });
 
-        stickerView.setOnStickerOperationListener(new StickerView.OnStickerOperationListener() {
-            @Override
-            public void onStickerAdded(@NonNull Sticker sticker) {
-                Log.d(TAG, "onStickerAdded");
-            }
 
-            @Override
-            public void onStickerClicked(@NonNull Sticker sticker) {
-                //stickerView.removeAllSticker();
-//                if (sticker instanceof TextSticker) {
-//                    ((TextSticker) sticker).setTextColor(Color.RED);
-//                    stickerView.replace(sticker);
-//                    stickerView.invalidate();
-//                }
-                Log.d(TAG, "onStickerClicked");
-            }
+    }
 
-            @Override
-            public void onStickerDeleted(@NonNull Sticker sticker) {
-                Log.d(TAG, "onStickerDeleted");
-            }
+    Bitmap bm;
+    class getBitmap extends AsyncTask<Void, Void, Void>{
+        @Override
+        protected Void doInBackground(Void... voids) {
+            bm = mImageView.getBitmapData();
 
-            @Override
-            public void onStickerDragFinished(@NonNull Sticker sticker) {
-                Log.d(TAG, "onStickerDragFinished");
-            }
+            return null;
+        }
 
-            @Override
-            public void onStickerTouchedDown(@NonNull Sticker sticker) {
-                Log.d(TAG, "onStickerTouchedDown");
-            }
-
-            @Override
-            public void onStickerZoomFinished(@NonNull Sticker sticker) {
-                Log.d(TAG, "onStickerZoomFinished");
-            }
-
-            @Override
-            public void onStickerFlipped(@NonNull Sticker sticker) {
-                Log.d(TAG, "onStickerFlipped");
-            }
-
-            @Override
-            public void onStickerDoubleTapped(@NonNull Sticker sticker) {
-                Log.d(TAG, "onDoubleTapped: double tap will be with two click");
-            }
-        });
-
+        @Override
+        protected void onPostExecute(Void unused) {
+            photoView.setImageBitmap(bm);
+            Handler handler = new Handler();
+            handler.postAtTime(new Runnable() {
+                @Override
+                public void run() {
+                    File file = FileUtil.getNewFile(MainActivity.this, "VintageCamera");
+                    if (file != null) {
+                        stickerView.save(file);
+                        Toast.makeText(MainActivity.this, "saved in " + file.getAbsolutePath(),
+                                Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(MainActivity.this, "the file is null", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }, 500);
+        }
     }
 
     private void initView() {

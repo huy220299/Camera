@@ -1,4 +1,4 @@
-package com.example.camera;
+package com.example.camera.fragment;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -22,6 +22,9 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.camera.ListColorAdapter;
+import com.example.camera.ListTextStyleAdapter;
+import com.example.camera.R;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
@@ -81,7 +84,7 @@ public class BottomSheetAddText extends BottomSheetDialogFragment implements Lis
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.bottom_sheet_layout, container, false);
+        View v = inflater.inflate(R.layout.bottom_sheet_layout_add_text, container, false);
 
         context = getContext();
         editText = v.findViewById(R.id.edtAddedText);
