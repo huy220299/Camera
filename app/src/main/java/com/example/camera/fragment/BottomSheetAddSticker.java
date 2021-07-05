@@ -26,7 +26,6 @@ import com.example.camera.ultis.Common;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.tabs.TabLayout;
-import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -77,7 +76,7 @@ public class BottomSheetAddSticker extends BottomSheetDialogFragment {
     }
 
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
+
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.bottom_sheet_layout_add_sticker, container, false);
@@ -144,7 +143,6 @@ public class BottomSheetAddSticker extends BottomSheetDialogFragment {
         }
 
 
-        Log.e("~~~", new Gson().toJson(list));
         return list;
 
     }

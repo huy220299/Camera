@@ -2,6 +2,7 @@ package com.example.camera;
 
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -13,6 +14,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Layout;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -35,6 +37,7 @@ import com.xiaopo.flying.sticker.StickerView;
 import com.xiaopo.flying.sticker.TextSticker;
 import com.xiaopo.flying.sticker.ZoomIconEvent;
 
+
 import org.wysaid.nativePort.CGENativeLibrary;
 import org.wysaid.view.ImageGLSurfaceView;
 
@@ -50,14 +53,17 @@ public class MainActivity extends AppCompatActivity implements FilterDemoAdapter
 
     private String mCurrentConfig;
     public static final String[] EFFECT_CONFIGS = {
-            "@adjust lut edgy_amber.png",
-            "@adjust lut filmstock.png",
-            "@adjust lut foggy_night.png",
-            "@adjust lut warm_layer.png",
-            "@adjust lut late_sunset.png",
-            "@adjust lut foggy_night.png",
-
-            "@adjust lut foggy_night.png",
+            "@adjust lut 001.jpg",
+            "@adjust lut 002.jpg",
+            "@adjust lut 003.jpg",
+            "@adjust lut 004.jpg",
+            "@adjust lut 005.jpg",
+            "@adjust lut 006.jpg",
+            "@adjust lut 007.jpg",
+            "@adjust lut 008.jpg",
+            "@adjust lut 008.jpg",
+            "@adjust lut 009.jpg",
+            "@adjust lut 010.jpg",
 
     };
 
@@ -82,8 +88,7 @@ public class MainActivity extends AppCompatActivity implements FilterDemoAdapter
 
            };
     int[] fontList = {R.font.bold,R.font.kaushan_script,R.font.muli_bolditalic,R.font.regular,R.font.toolbar};
-    RecyclerView recyclerViewTextStyle;
-    TextStyleAdapter adapterTextStyle;
+
 
     BottomSheetAddText bottomSheetAddText;
     BottomSheetAddSticker bottomSheetAddSticker;
@@ -115,40 +120,12 @@ public class MainActivity extends AppCompatActivity implements FilterDemoAdapter
     }
 
     private void onActionEvent() {
-        btnSave.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-
-                new getBitmap().execute();
-
-/*
-                Handler handler =  new Handler();
-                handler.postAtTime(new Runnable() {
-                    @Override
-                    public void run() {
-
-                        File file = FileUtil.getNewFile(MainActivity.this, "VintageCamera");
-                        if (file != null) {
-                            stickerView.save(file);
-                            Toast.makeText(MainActivity.this, "saved in " + file.getAbsolutePath(),
-                                    Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(MainActivity.this, "the file is null", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                }, 2000);*/
-
-
-
-            }
-        });
+        btnSave.setOnClickListener(v -> new getBitmapFiltered().execute());
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 float intensity = progress / 100.0f;
                 mImageView.setFilterIntensity(intensity);
-
             }
 
             @Override
@@ -170,8 +147,6 @@ public class MainActivity extends AppCompatActivity implements FilterDemoAdapter
 
         });
 
-
-
         btnAddSticker.setOnClickListener(v -> {
 
             Bundle bundle = new Bundle();
@@ -181,14 +156,13 @@ public class MainActivity extends AppCompatActivity implements FilterDemoAdapter
 
         });
 
-
     }
 
     Bitmap bm;
-    class getBitmap extends AsyncTask<Void, Void, Void>{
+    class getBitmapFiltered extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... voids) {
-            bm = mImageView.getBitmapData();
+//            bm = mImageView.getBitmapData();
 
             return null;
         }
@@ -328,9 +302,12 @@ public class MainActivity extends AppCompatActivity implements FilterDemoAdapter
 
 
             AssetManager am = getAssets();
+
             InputStream is;
             try {
-                is = am.open(name);
+//                is = am.open(name);
+                is = am.open("lut/"+name);
+                Log.e("~~~",name);
             } catch (IOException e) {
 
                 return null;
@@ -403,5 +380,23 @@ public class MainActivity extends AppCompatActivity implements FilterDemoAdapter
 
        }
 
+    }
+    public List<String> getNameFilterFromAssets(Context context) {
+        List<String> list = new ArrayList<>();
+        AssetManager assetManager;
+        try {
+            assetManager = context.getAssets();
+            list = Arrays.asList(assetManager.list("sticker"));
+        } catch (IOException e) {
+
+        }
+        return list;
+    }
+    private List<String> getListRules(List<String> list){
+        List<String> listRules = new ArrayList<>();
+        for (int i = 0; i <list.size() ; i++) {
+            listRules.add("@adjust lut "+list.get(i)) ;
+        }
+        return listRules;
     }
 }
