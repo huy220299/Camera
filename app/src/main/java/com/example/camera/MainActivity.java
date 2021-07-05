@@ -1,5 +1,7 @@
 package com.example.camera;
 
+
+import android.annotation.SuppressLint;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -12,14 +14,12 @@ import android.os.Bundle;
 import android.text.Layout;
 import android.util.Log;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -34,7 +34,6 @@ import com.xiaopo.flying.sticker.StickerView;
 import com.xiaopo.flying.sticker.TextSticker;
 import com.xiaopo.flying.sticker.ZoomIconEvent;
 
-import org.wysaid.common.Common;
 import org.wysaid.nativePort.CGENativeLibrary;
 import org.wysaid.view.ImageGLSurfaceView;
 
@@ -48,7 +47,7 @@ public class MainActivity extends AppCompatActivity implements FilterDemoAdapter
     public  static String TAG = "MainActivity";
 
     private String mCurrentConfig;
-    public static final String EFFECT_CONFIGS[] = {
+    public static final String[] EFFECT_CONFIGS = {
             "@adjust lut edgy_amber.png",
             "@adjust lut filmstock.png",
             "@adjust lut foggy_night.png",
@@ -59,12 +58,15 @@ public class MainActivity extends AppCompatActivity implements FilterDemoAdapter
             "@adjust lut foggy_night.png",
 
     };
+
     ImageGLSurfaceView mImageView;
     RecyclerView recyclerView;
     FilterDemoAdapter adapter;
     List<FilterData> filterDataList;
     Bitmap mBitmap;
     SeekBar seekBar;
+    private RelativeLayout btnSave, btnBack;
+    private ImageView photoView;
 
     private ImageView btnAddText, btnEditText, btnAddSticker;
     private boolean isVisibility = true;
@@ -80,7 +82,6 @@ public class MainActivity extends AppCompatActivity implements FilterDemoAdapter
     int[] fontList = {R.font.bold,R.font.kaushan_script,R.font.muli_bolditalic,R.font.regular,R.font.toolbar};
     RecyclerView recyclerViewTextStyle;
     TextStyleAdapter adapterTextStyle;
-    private ConstraintLayout constraintLayoutTextStyle;
 
     BottomSheetAddText bottomSheetAddText;
 
@@ -91,13 +92,58 @@ public class MainActivity extends AppCompatActivity implements FilterDemoAdapter
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        View decorView = getWindow().getDecorView();
+        // Hide the status bar.
+        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+        decorView.setSystemUiVisibility(uiOptions);
+
         initView();
         onActionEvent();
 
 
     }
 
+    public static Bitmap loadBitmapFromView(View v) {
+        Bitmap b = Bitmap.createBitmap( v.getLayoutParams().width, v.getLayoutParams().height, Bitmap.Config.ARGB_8888);
+        Canvas c = new Canvas(b);
+        v.layout(v.getLeft(), v.getTop(), v.getRight(), v.getBottom());
+        v.draw(c);
+        return b;
+    }
+
     private void onActionEvent() {
+        btnSave.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+                photoView.setImageBitmap(mImageView.getBitmapData());
+                mImageView.setVisibility(View.GONE);
+
+
+                 photoView.setImageBitmap(loadBitmapFromView(stickerView));
+
+/*
+                Handler handler =  new Handler();
+                handler.postAtTime(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        File file = FileUtil.getNewFile(MainActivity.this, "VintageCamera");
+                        if (file != null) {
+                            stickerView.save(file);
+                            Toast.makeText(MainActivity.this, "saved in " + file.getAbsolutePath(),
+                                    Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(MainActivity.this, "the file is null", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }, 2000);*/
+
+
+
+            }
+        });
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -123,34 +169,9 @@ public class MainActivity extends AppCompatActivity implements FilterDemoAdapter
             bottomSheetAddText.show(getSupportFragmentManager(), "ModalBottomSheet");
             bottomSheetAddText.setArguments(bundle);
 
-//
-//            if (isVisibility){
-//                recyclerView.setVisibility(View.GONE);
-//                constraintLayoutTextStyle.setVisibility(View.VISIBLE);
-//                isVisibility = false;
-//            }else {
-//                recyclerView.setVisibility(View.VISIBLE);
-//                constraintLayoutTextStyle.setVisibility(View.GONE);
-//                isVisibility =true;
-//            }
-
         });
 
-        btnEditText.setOnClickListener(v -> {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("Title");
 
-            final EditText input = new EditText(this);
-            builder.setView(input);
-            builder.setPositiveButton("OK", (dialog, which) -> {
-                String inputText = input.getText().toString();
-//                addTextSticker(inputText);
-                Log.e("~~~", inputText);
-            });
-            builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
-
-            builder.show();
-        });
 
         btnAddSticker.setOnClickListener(v -> {
             Drawable drawable =
@@ -213,30 +234,28 @@ public class MainActivity extends AppCompatActivity implements FilterDemoAdapter
     }
 
     private void initView() {
+        photoView = findViewById(R.id.photoView);
         btnAddText= findViewById(R.id.btnAddText);
+        btnSave= findViewById(R.id.btnSave);
+        btnBack= findViewById(R.id.btnBack);
         stickerView= findViewById(R.id.stickerView);
-        mImageView = (ImageGLSurfaceView) findViewById(R.id.image);
-        btnEditText =  findViewById(R.id.btnEditText);
+        mImageView = findViewById(R.id.image);
+
         btnAddSticker =  findViewById(R.id.btnAddSticker);
-        seekBar = (SeekBar) findViewById(R.id.globalRestoreSeekBar);
-        constraintLayoutTextStyle =  findViewById(R.id.constraintLayoutTextStyle);
+        seekBar = findViewById(R.id.globalRestoreSeekBar);
 
 
         //set main image
-        mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.natural);
-        mImageView.setScaleX(0.8f);
-        mImageView.setSurfaceCreatedCallback(new ImageGLSurfaceView.OnSurfaceCreatedCallback() {
-            @Override
-            public void surfaceCreated() {
+        mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.sample1);
+        mImageView.setSurfaceCreatedCallback(() -> {
 
-                mImageView.setImageBitmap(mBitmap);
-                mImageView.setFilterWithConfig(mCurrentConfig);
-                mImageView.setFilterIntensity(1.0f);
-                CGENativeLibrary.setLoadImageCallback(mLoadImageCallback, null);
-            }
+            mImageView.setImageBitmap(mBitmap);
+            mImageView.setFilterWithConfig(mCurrentConfig);
+            mImageView.setFilterIntensity(1.0f);
+            CGENativeLibrary.setLoadImageCallback(mLoadImageCallback, null);
         });
-        //todo hashcode
-//        mCurrentConfig ="@adjust lut late_sunset.png";
+        mImageView.setDisplayMode(ImageGLSurfaceView.DisplayMode.DISPLAY_ASPECT_FIT);
+
 
         //set up sticker view
         //currently you can config your own icons and icon event
@@ -264,6 +283,10 @@ public class MainActivity extends AppCompatActivity implements FilterDemoAdapter
 
 
 
+
+
+
+
         //default icon layout
         //stickerView.configDefaultIcons();
 
@@ -281,14 +304,10 @@ public class MainActivity extends AppCompatActivity implements FilterDemoAdapter
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
 
         //Show list text style
-        recyclerViewTextStyle = findViewById(R.id.recyclerViewTextStyle);
-        adapterTextStyle =new TextStyleAdapter("xin chao", fontList,this)  ;
-        recyclerViewTextStyle.setAdapter(adapterTextStyle);
-        recyclerViewTextStyle.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-
-    }
-    private void addSticker(){
-            stickerView.addSticker(new TextSticker(getApplicationContext()).setText("Hello").resizeText().setMaxTextSize(14));
+//        recyclerViewTextStyle = findViewById(R.id.recyclerViewTextStyle);
+//        adapterTextStyle =new TextStyleAdapter("xin chao", fontList,this)  ;
+//        recyclerViewTextStyle.setAdapter(adapterTextStyle);
+//        recyclerViewTextStyle.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
 
     }
     private void addTextSticker(String text, String textStyle,int align, String stringColor) {
@@ -327,13 +346,13 @@ public class MainActivity extends AppCompatActivity implements FilterDemoAdapter
         @Override
         public Bitmap loadImage(String name, Object arg) {
 
-            Log.i(Common.LOG_TAG, "Loading file: " + name);
+
             AssetManager am = getAssets();
             InputStream is;
             try {
                 is = am.open(name);
             } catch (IOException e) {
-                Log.e(Common.LOG_TAG, "Can not open file " + name);
+
                 return null;
             }
 
@@ -342,7 +361,7 @@ public class MainActivity extends AppCompatActivity implements FilterDemoAdapter
 
         @Override
         public void loadImageOK(Bitmap bmp, Object arg) {
-            Log.i(Common.LOG_TAG, "Loading bitmap over, you can choose to recycle or cache");
+
 
             //The bitmap is which you returned at 'loadImage'.
             //You can call recycle when this function is called, or just keep it for further usage.
@@ -355,7 +374,7 @@ public class MainActivity extends AppCompatActivity implements FilterDemoAdapter
     public void onClick(View view, int position, String type) {
         try {
             currentFont = fontList[position];
-        }catch (Exception e){
+        }catch (Exception ignored){
 
 
         }
@@ -383,6 +402,7 @@ public class MainActivity extends AppCompatActivity implements FilterDemoAdapter
         return result;
     }
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     public void onButtonClicked(View view, Bundle bundle) {
 

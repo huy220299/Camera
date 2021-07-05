@@ -15,7 +15,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.ViewConfiguration;
-import android.widget.RelativeLayout;
+import android.widget.FrameLayout;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
@@ -36,7 +36,7 @@ import java.util.List;
  * Sticker View
  * @author wupanjie
  */
-public class StickerView extends RelativeLayout {
+public class StickerView extends FrameLayout {
 
   private final boolean showIcons;
   private final boolean showBorder;

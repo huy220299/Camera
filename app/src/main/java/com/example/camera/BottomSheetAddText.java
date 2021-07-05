@@ -62,6 +62,7 @@ public class BottomSheetAddText extends BottomSheetDialogFragment implements Lis
         if (dialog != null) {
             View bottomSheet = dialog.findViewById(R.id.design_bottom_sheet);
             bottomSheet.getLayoutParams().height = ViewGroup.LayoutParams.MATCH_PARENT;
+
         }
         View view = getView();
         view.post(() -> {
@@ -70,6 +71,7 @@ public class BottomSheetAddText extends BottomSheetDialogFragment implements Lis
             CoordinatorLayout.Behavior behavior = params.getBehavior();
             BottomSheetBehavior bottomSheetBehavior = (BottomSheetBehavior) behavior;
             bottomSheetBehavior.setPeekHeight((int) (view.getMeasuredHeight() * 0.7));
+
 
 
         });

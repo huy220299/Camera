@@ -1,3 +1,4 @@
 rootProject.name = "Camera"
 include ':app'
 include ':sticker'
+include ':libraryGL'
