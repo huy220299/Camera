@@ -1,6 +1,10 @@
 <resources>
     <string name="app_name">Camera</string>
     <string name="DefaultString">Abc</string>
+    <string name="permission_storage">Allow access storage</string>
+    <string name="permission_camera">Allow access Camera</string>
+    <string name="photo">Photo</string>
+    <string name="camera">Camera</string>
     <string-array name="listColor">
         <item>#000000</item>
         <item>#FF0000</item>

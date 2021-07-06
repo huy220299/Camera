@@ -149,9 +149,6 @@ public class BottomSheetAddText extends BottomSheetDialogFragment implements Lis
         });
 
 
-
-
-
         return v;
     }
 

@@ -1,13 +1,9 @@
 package com.example.camera.fragment;
 
-import android.app.Activity;
 import android.app.Dialog;
-import android.content.Context;
-import android.content.res.AssetManager;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,17 +22,13 @@ import com.example.camera.ultis.Common;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.tabs.TabLayout;
-import com.google.gson.Gson;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class BottomSheetAddSticker extends BottomSheetDialogFragment {
 
-    private Callback callback;
     private TabLayout tabLayout;
     private ViewPager viewPager;
     private RecyclerView recyclerView;
@@ -63,6 +55,7 @@ public class BottomSheetAddSticker extends BottomSheetDialogFragment {
             bottomSheet.getLayoutParams().height = Common.getScreenHeight();
 
 
+
         }
         View view = getView();
         view.post(() -> {
@@ -87,13 +80,13 @@ public class BottomSheetAddSticker extends BottomSheetDialogFragment {
         tabLayout = v.findViewById(R.id.tabLayout);
         addTabs(viewPager);
         tabLayout.setupWithViewPager(viewPager);
-        List<String> list = getStickerFromAssets(getContext());
+        List<String> list = Common.getStickerFromAssets(getContext());
         listFirstSticker = new Drawable[list.size()];
         for (int i = 0; i < list.size(); i++) {
 //            tabLayout.getTabAt(i).setText(list.get(i));
             try {
-                tabLayout.getTabAt(i).setIcon(getFirstInPack(getContext(), list.get(i)));
-                listFirstSticker[i] = getFirstInPack(getContext(), list.get(i));
+                tabLayout.getTabAt(i).setIcon(Common.getFirstInPack(getContext(), list.get(i)));
+                listFirstSticker[i] = Common.getFirstInPack(getContext(), list.get(i));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -128,48 +121,12 @@ public class BottomSheetAddSticker extends BottomSheetDialogFragment {
         return v;
     }
 
-    public Drawable getFirstInPack(Context context, String namePack) throws IOException {
-        InputStream inputStream = context.getAssets().open("sticker/" + namePack + "/0.png");
-        return Drawable.createFromStream(inputStream, null);
-    }
 
-    public List<String> getStickerFromAssets(Context context) {
-        List<String> list = new ArrayList<>();
-        AssetManager assetManager;
-        try {
-            assetManager = context.getAssets();
-            list = Arrays.asList(assetManager.list("sticker"));
-        } catch (IOException e) {
-
-        }
-
-
-        Log.e("~~~", new Gson().toJson(list));
-        return list;
-
-    }
-    
-
-    public interface Callback {
-        public void onButtonClicked(View view, Bundle bundle);
-    }
-
-    @Override
-    public void onAttach(Activity ac) {
-        super.onAttach(ac);
-        callback = (Callback) ac;
-    }
-
-    @Override
-    public void onDetach() {
-        callback = null;
-        super.onDetach();
-    }
 
     private void addTabs(ViewPager viewPager) {
         ViewPagerPackStickerAdapter adapter = new ViewPagerPackStickerAdapter(getChildFragmentManager());
         List<String> list = new ArrayList<>();
-        list = getStickerFromAssets(getContext());
+        list = Common.getStickerFromAssets(getContext());
         for (int i = 0; i < list.size(); i++) {
             adapter.addFrag(new DetailPackStickerFragment(list.get(i)), list.get(i));
         }

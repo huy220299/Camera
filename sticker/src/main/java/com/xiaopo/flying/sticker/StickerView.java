@@ -778,16 +778,28 @@ public class StickerView extends FrameLayout {
     sticker.getMappedPoints(dst, bounds);
   }
 
-  public void save(@NonNull File file) {
+  public File  save(@NonNull File file, int width, int height) {
+    File f = null;
     try {
-      StickerUtils.saveImageToGallery(file, createBitmap());
+      f = StickerUtils.saveImageToGallery(file, createBitmap(width,height));
+      StickerUtils.notifySystemGallery(getContext(), file);
+    } catch (IllegalArgumentException | IllegalStateException ignored) {
+      //
+    }
+
+    return f;
+  }
+
+  public void saveBitmap(@NonNull File file,Bitmap bm) {
+    try {
+      StickerUtils.saveImageToGallery(file, bm);
       StickerUtils.notifySystemGallery(getContext(), file);
     } catch (IllegalArgumentException | IllegalStateException ignored) {
       //
     }
   }
 
-  @NonNull public Bitmap createBitmap() throws OutOfMemoryError {
+  @NonNull public Bitmap createBitmap(int width, int height) throws OutOfMemoryError {
     handlingSticker = null;
     Bitmap bitmap = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
     Canvas canvas = new Canvas(bitmap);

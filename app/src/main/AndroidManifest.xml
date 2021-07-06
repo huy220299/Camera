@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.camera">
 
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         tools:ignore="ScopedStorage" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.CAMERA" />
@@ -17,15 +18,18 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Camera">
-        <activity android:name=".TestActivity">
-
-        </activity>
-        <activity android:name=".MainActivity">
+        <activity android:name=".activity.StartActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity android:name=".PermissionActivity" />
+        <activity android:name=".SaveActivity" />
+        <activity android:name=".TestActivity" />
+        <activity android:name=".MainActivity">
+
         </activity>
     </application>
 

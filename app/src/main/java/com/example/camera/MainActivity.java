@@ -3,17 +3,22 @@ package com.example.camera;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Layout;
+import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -27,10 +32,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.camera.fragment.BottomSheetAddSticker;
 import com.example.camera.fragment.BottomSheetAddText;
+import com.example.camera.fragment.DetailPackStickerFragment;
 import com.example.camera.model.FilterData;
+import com.example.camera.ultis.Common;
 import com.example.camera.ultis.FileUtil;
 import com.xiaopo.flying.sticker.BitmapStickerIcon;
 import com.xiaopo.flying.sticker.DeleteIconEvent;
+import com.xiaopo.flying.sticker.DrawableSticker;
 import com.xiaopo.flying.sticker.FlipHorizontallyEvent;
 import com.xiaopo.flying.sticker.StickerView;
 import com.xiaopo.flying.sticker.TextSticker;
@@ -46,7 +54,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements FilterDemoAdapter.ItemClickListener, BottomSheetAddText.Callback, BottomSheetAddSticker.Callback {
+public class MainActivity extends AppCompatActivity implements FilterDemoAdapter.ItemClickListener, BottomSheetAddText.Callback, DetailPackStickerFragment.CallbackSticker {
     public  static String TAG = "MainActivity";
 
     private String mCurrentConfig;
@@ -74,7 +82,9 @@ public class MainActivity extends AppCompatActivity implements FilterDemoAdapter
     private ImageView btnAddText, btnEditText, btnAddSticker;
     private boolean isVisibility = true;
     private int currentFont;
-    StickerView stickerView;
+    private Bitmap bm;
+    private Drawable addedSticker;
+    private StickerView stickerView;
 
     int[] imageFilterId = {R.drawable.natural, R.drawable.natural1,
             R.drawable.natural, R.drawable.natural1,
@@ -105,6 +115,42 @@ public class MainActivity extends AppCompatActivity implements FilterDemoAdapter
         onActionEvent();
 
 
+
+
+
+//        ViewTreeObserver vto = mImageView.getViewTreeObserver();
+//        vto.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+//            public boolean onPreDraw() {
+//                mImageView.getViewTreeObserver().removeOnPreDrawListener(this);
+//               /* finalHeight = ;
+//                finalWidth = iv.getMeasuredWidth();
+//
+//*/
+//                Log.d("thunt","w: "+mImageView.getMeasuredWidth() + "HGIT: "+mImageView.getHeight());
+//                ConstraintLayout.LayoutParams layoutParams = new ConstraintLayout.LayoutParams(mImageView.getMeasuredWidth(),mImageView.getHeight());
+//                stickerView.setLayoutParams(layoutParams);
+//
+//
+//                return true;
+//            }
+//        });
+
+    }
+    public Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight) {
+        int width = bm.getWidth();
+        int height = bm.getHeight();
+        float scaleWidth = ((float) newWidth) / width;
+        float scaleHeight = ((float) newHeight) / height;
+        // CREATE A MATRIX FOR THE MANIPULATION
+        Matrix matrix = new Matrix();
+        // RESIZE THE BIT MAP
+        matrix.postScale(scaleWidth, scaleHeight);
+
+        // "RECREATE" THE NEW BITMAP
+        Bitmap resizedBitmap = Bitmap.createBitmap(
+                bm, 0, 0, width, height, matrix, false);
+        bm.recycle();
+        return resizedBitmap;
     }
 
     public static Bitmap loadBitmapFromView(View v) {
@@ -121,9 +167,13 @@ public class MainActivity extends AppCompatActivity implements FilterDemoAdapter
             @Override
             public void onClick(View v) {
 
+
                 new getBitmap().execute();
 
             }
+        });
+        btnBack.setOnClickListener(v -> {
+            startActivity(getIntent());
         });
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -144,12 +194,10 @@ public class MainActivity extends AppCompatActivity implements FilterDemoAdapter
             }
         });
         btnAddText.setOnClickListener(v -> {
-
             Bundle bundle = new Bundle();
             bottomSheetAddText = new BottomSheetAddText();
             bottomSheetAddText.show(getSupportFragmentManager(), "ModalBottomSheet");
             bottomSheetAddText.setArguments(bundle);
-
         });
 
 
@@ -166,7 +214,26 @@ public class MainActivity extends AppCompatActivity implements FilterDemoAdapter
 
     }
 
-    Bitmap bm;
+
+
+    @Override
+    public void onStickerClicked(Bundle bundle) {
+        String nameSticker = bundle.getString("nameSticker","");
+        String namePack = bundle.getString("namePack","");
+        try {
+             addedSticker = Common.getStickerInAssets(this,nameSticker,namePack);
+             stickerView.addSticker(new DrawableSticker(addedSticker));
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        bottomSheetAddSticker.dismiss();
+    }
+
+    public  void addSticker(Drawable drawable){
+        stickerView.addSticker(new DrawableSticker(drawable));
+    }
+
     class getBitmap extends AsyncTask<Void, Void, Void>{
         @Override
         protected Void doInBackground(Void... voids) {
@@ -177,15 +244,23 @@ public class MainActivity extends AppCompatActivity implements FilterDemoAdapter
         @Override
         protected void onPostExecute(Void unused) {
             photoView.setImageBitmap(bm);
+            photoView.setVisibility(View.VISIBLE);
+
+            Log.e("~~~",photoView.getHeight()+" "+photoView.getWidth());
+            Log.e("~~~", mImageView.getHeight()+"  "+mImageView.getWidth());
             Handler handler = new Handler();
             handler.postAtTime(new Runnable() {
                 @Override
                 public void run() {
                     File file = FileUtil.getNewFile(MainActivity.this, "VintageCamera");
                     if (file != null) {
-                        stickerView.save(file);
-                        Toast.makeText(MainActivity.this, "saved in " + file.getAbsolutePath(),
+                        File fSave = stickerView.save(file, mImageView.getWidth(), mImageView.getHeight());
+                        Toast.makeText(MainActivity.this, "saved in " + fSave.getAbsolutePath(),
                                 Toast.LENGTH_SHORT).show();
+
+                        Intent intent = new Intent(MainActivity.this, SaveActivity.class);
+                        intent.putExtra("path", fSave.getAbsolutePath());
+                        startActivity(intent);
                     } else {
                         Toast.makeText(MainActivity.this, "the file is null", Toast.LENGTH_SHORT).show();
                     }
@@ -207,7 +282,18 @@ public class MainActivity extends AppCompatActivity implements FilterDemoAdapter
 
 
         //set main image
-        mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.sample1);
+        mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.mg2);
+        float H = (float) mBitmap.getWidth()/(mBitmap.getHeight());
+        float W = (float) ((float) Common.getScreenWidth()/(Common.getScreenHeight()*0.73));
+        int newWidth = (int) (mBitmap.getWidth()*Common.getScreenHeight()*0.73/mBitmap.getHeight());
+        int newHeight = mBitmap.getHeight()*Common.getScreenWidth()/mBitmap.getWidth();
+        Log.e("~~~", H+"++++"+W);
+        if (H<W){
+           mBitmap=  getResizedBitmap(mBitmap,newWidth, (int) (Common.getScreenHeight()*0.73));
+        }else {
+            mBitmap = getResizedBitmap(mBitmap,Common.getScreenWidth(),newHeight);
+        }
+        Log.e("~~~",mBitmap.getWidth()+"___"+mBitmap.getHeight());
         mImageView.setSurfaceCreatedCallback(() -> {
 
             mImageView.setImageBitmap(mBitmap);
@@ -240,12 +326,10 @@ public class MainActivity extends AppCompatActivity implements FilterDemoAdapter
 
 
         stickerView.setIcons(Arrays.asList(deleteIcon, zoomIcon, flipIcon));
-
-
-
-
-
-
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(mBitmap.getWidth(), mBitmap.getHeight());
+//        stickerView.setLayoutParams(layoutParams);
+        stickerView.getLayoutParams().width= mBitmap.getWidth();
+        stickerView.getLayoutParams().height= mBitmap.getHeight();
 
 
         //default icon layout
@@ -300,10 +384,13 @@ public class MainActivity extends AppCompatActivity implements FilterDemoAdapter
         list.add(new FilterData("test7", EFFECT_CONFIGS[6], imageFilterId[0]));
         return list;
     }
+    public static float convertDpToPixel(float dp, Context context){
+        return dp * ((float) context.getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT);
+    }
 
     public CGENativeLibrary.LoadImageCallback mLoadImageCallback = new CGENativeLibrary.LoadImageCallback() {
 
-        //Notice: the 'name' passed in is just what you write in the rule, e.g: 1.jpg
+        //Notice: the 'name' passed in is just what you write in the rule, e.g: image1.jpg
         @Override
         public Bitmap loadImage(String name, Object arg) {
 
