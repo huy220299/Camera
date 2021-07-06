@@ -2,6 +2,7 @@ package com.example.camera;
 
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -122,25 +123,6 @@ public class MainActivity extends AppCompatActivity implements FilterDemoAdapter
 
                 new getBitmap().execute();
 
-/*
-                Handler handler =  new Handler();
-                handler.postAtTime(new Runnable() {
-                    @Override
-                    public void run() {
-
-                        File file = FileUtil.getNewFile(MainActivity.this, "VintageCamera");
-                        if (file != null) {
-                            stickerView.save(file);
-                            Toast.makeText(MainActivity.this, "saved in " + file.getAbsolutePath(),
-                                    Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(MainActivity.this, "the file is null", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                }, 2000);*/
-
-
-
             }
         });
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -189,7 +171,6 @@ public class MainActivity extends AppCompatActivity implements FilterDemoAdapter
         @Override
         protected Void doInBackground(Void... voids) {
             bm = mImageView.getBitmapData();
-
             return null;
         }
 
@@ -403,5 +384,24 @@ public class MainActivity extends AppCompatActivity implements FilterDemoAdapter
 
        }
 
+    }
+
+    public List<String> getNameFilterFromAssets(Context context) {
+        List<String> list = new ArrayList<>();
+        AssetManager assetManager;
+        try {
+            assetManager = context.getAssets();
+            list = Arrays.asList(assetManager.list("sticker"));
+        } catch (IOException e) {
+
+        }
+        return list;
+    }
+    private List<String> getListRules(List<String> list){
+        List<String> listRules = new ArrayList<>();
+        for (int i = 0; i <list.size() ; i++) {
+            listRules.add("@adjust lut "+list.get(i)) ;
+        }
+        return listRules;
     }
 }

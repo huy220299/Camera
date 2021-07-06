@@ -20,7 +20,7 @@ import com.example.camera.adapter.StickerAdapter;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class DetailPackStickerFragment extends Fragment {
+public class DetailPackStickerFragment extends Fragment implements View.OnClickListener {
     RecyclerView recyclerView;
     private StickerAdapter adapter;
     private String namePack = "1";
@@ -40,6 +40,8 @@ public class DetailPackStickerFragment extends Fragment {
     listSticker=getDrawableFromAssets(getContext(), namePack);
     adapter =new StickerAdapter(listSticker,3,(view, position) -> {
         //todo
+        onClick(view);
+
     });
     recyclerView.setAdapter(adapter);
 
@@ -68,5 +70,10 @@ public class DetailPackStickerFragment extends Fragment {
             // you can print error or log.
         }
         return null;
+    }
+
+    @Override
+    public void onClick(View v) {
+
     }
 }
