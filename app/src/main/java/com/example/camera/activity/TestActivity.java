@@ -1,8 +1,10 @@
-package com.example.camera;
+package com.example.camera.activity;
 
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.camera.R;
 
 public class TestActivity extends AppCompatActivity  {
 

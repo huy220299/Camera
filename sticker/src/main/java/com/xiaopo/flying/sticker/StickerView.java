@@ -789,6 +789,9 @@ public class StickerView extends FrameLayout {
 
     return f;
   }
+  public Bitmap getBitmap(int width, int height){
+    return createBitmap(width,height);
+  }
 
   public void saveBitmap(@NonNull File file,Bitmap bm) {
     try {

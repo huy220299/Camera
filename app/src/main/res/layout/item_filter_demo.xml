@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="match_parent"
     android:layout_marginRight="@dimen/_5sdp"
@@ -17,7 +16,7 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:src="@drawable/natural"
-            app:layout_constraintBottom_toTopOf="@+id/guideline"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -29,6 +28,7 @@
             app:layout_constraintGuide_percent=".8" />
 
         <TextView
+            android:visibility="gone"
             android:id="@+id/tvImage"
             android:layout_width="match_parent"
             android:layout_height="0dp"

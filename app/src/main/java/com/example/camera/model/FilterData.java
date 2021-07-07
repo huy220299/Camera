@@ -8,10 +8,9 @@ public class FilterData implements Serializable {
     String rule;
     int imageId;
  
-    public FilterData(String name, String rule, int imageId) {
+    public FilterData(String name, String rule) {
         this.name = name;
         this.rule = rule;
-        this.imageId = imageId;
     }
  
     public String getName() {
@@ -30,11 +29,5 @@ public class FilterData implements Serializable {
         this.rule = rule;
     }
  
-    public int getImageId() {
-        return imageId;
-    }
- 
-    public void setImageId(int imageId) {
-        this.imageId = imageId;
-    }
+
 }

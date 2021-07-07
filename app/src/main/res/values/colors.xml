@@ -10,4 +10,6 @@
     <color name="red">#FA0000</color>
     <color name="transparent">#00000000</color>
     <color name="background_color">#3C1F70</color>
+    <color name="main_color">#3C3642</color>
+    <color name="background_edit">#7C797B</color>
 </resources>

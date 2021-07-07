@@ -4,7 +4,6 @@ package com.example.camera;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,9 +26,11 @@ public class FilterDemoAdapter extends RecyclerView.Adapter<FilterDemoAdapter.Vi
     Activity activity;
     List<FilterData> listFilter;
     Context context;
+    Bitmap bitmap;
 
-    public FilterDemoAdapter(List<FilterData> listFilter, ItemClickListener itemClickListener) {
+    public FilterDemoAdapter(List<FilterData> listFilter, ItemClickListener itemClickListener, Bitmap bitmap) {
         this.listFilter = listFilter;
+        this.bitmap = bitmap;
         this.itemClickListener = itemClickListener;
 
     }
@@ -48,9 +49,9 @@ public class FilterDemoAdapter extends RecyclerView.Adapter<FilterDemoAdapter.Vi
 
 
        FilterData currentItem = listFilter.get(position);
-        Bitmap mBitmap = BitmapFactory.decodeResource(context.getResources(),currentItem.getImageId());
+
         holder.img.setSurfaceCreatedCallback(() -> {
-            holder.img.setImageBitmap(mBitmap);
+            holder.img.setImageBitmap(bitmap);
            holder.img.setFilterWithConfig(currentItem.getRule());
         });
         holder.img_name.setText(currentItem.getName());
