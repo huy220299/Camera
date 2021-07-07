@@ -16,6 +16,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Layout;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -36,6 +37,7 @@ import com.example.camera.fragment.DetailPackStickerFragment;
 import com.example.camera.model.FilterData;
 import com.example.camera.ultis.BitmapUlti;
 import com.example.camera.ultis.Common;
+import com.example.camera.ultis.FileUtil;
 import com.xiaopo.flying.sticker.BitmapStickerIcon;
 import com.xiaopo.flying.sticker.DeleteIconEvent;
 import com.xiaopo.flying.sticker.DrawableSticker;
@@ -51,6 +53,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 
 
@@ -78,6 +81,7 @@ public class MainActivity extends BaseActivity implements FilterDemoAdapter.Item
     List<FilterData> filterDataList;
     Bitmap mBitmap;
     private SeekBar seekBarFilter, seekBarBrightness, seekBarContrast, seekBarSaturation;
+    private int currentBright=-1, currentContrast=-1, currentSaturation=-1;
     private TextView tvBrightness, tvContrast, tvSaturation;
     private RelativeLayout btnSave, btnBack, btnMultiChange;
     private ImageView photoView;
@@ -191,7 +195,6 @@ public class MainActivity extends BaseActivity implements FilterDemoAdapter.Item
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 float intensity = progress / 100.0f;
                 mImageView.setFilterIntensity(intensity);
-
             }
 
             @Override
@@ -208,8 +211,10 @@ public class MainActivity extends BaseActivity implements FilterDemoAdapter.Item
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 tvBrightness.setText(String.valueOf(progress));
-                mBitmap = BitmapUlti.adjustBrightness(mBitmap,(float) progress);
+                mBitmap = BitmapUlti.adjustBrightness(mBitmap,(float) (progress*3-150));//from -150 to 150
+                Log.e("~~~",(progress*3-150)+"");
                 mImageView.setImageBitmap(mBitmap);
+                currentBright = progress;
 
             }
 
@@ -227,11 +232,9 @@ public class MainActivity extends BaseActivity implements FilterDemoAdapter.Item
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 tvContrast.setText(String.valueOf(progress));
-                if(mActiveConfig != null) {
-                    float intensity = progress / (float)seekBar.getMax();
-                    mActiveConfig.setIntensity(intensity, true);
-                }
-
+                mBitmap = BitmapUlti.adjustedContrast(mBitmap,(float) (progress/10));//from 0-10
+                mImageView.setImageBitmap(mBitmap);
+                currentContrast =progress;
             }
 
             @Override
@@ -248,12 +251,10 @@ public class MainActivity extends BaseActivity implements FilterDemoAdapter.Item
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 tvSaturation.setText(String.valueOf(progress));
-                if(mActiveConfig != null) {
-                    float intensity = progress / (float)seekBar.getMax();
-                    mActiveConfig.setIntensity(intensity, true);
-
-                }
-
+                tvContrast.setText(String.valueOf(progress));
+                mBitmap = BitmapUlti.adjustSaturation(mBitmap,(float) (progress*3-150));//from -150 to 150
+                mImageView.setImageBitmap(mBitmap);
+                currentSaturation =progress;
             }
 
             @Override
@@ -370,7 +371,12 @@ public class MainActivity extends BaseActivity implements FilterDemoAdapter.Item
 
                         Bitmap fBitmap = stickerView.getBitmap(mImageView.getWidth(), mImageView.getHeight());
                         photoView.setVisibility(View.INVISIBLE);
-                        Intent intent = new Intent(MainActivity.this, CropImageActivity.class);
+                    try {
+                        FileUtil.saveImage(MainActivity.this,fBitmap, String.valueOf(Calendar.getInstance().getTimeInMillis()));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    Intent intent = new Intent(MainActivity.this, CropImageActivity.class);
                         intent.putExtra("bitmapBytes", BitmapUlti.convertToArray(fBitmap));
                         startActivity(intent);
 //                    } else {
@@ -400,6 +406,19 @@ public class MainActivity extends BaseActivity implements FilterDemoAdapter.Item
         tvBrightness = findViewById(R.id.tvBrightness);
         tvContrast = findViewById(R.id.tvContrast);
         tvSaturation = findViewById(R.id.tvSaturation);
+
+        //seekbar
+        if (currentBright!=-1){
+            seekBarBrightness.setProgress(currentBright);
+        }{
+            seekBarBrightness.setProgress(50);
+        }
+        if (currentContrast!=-1){
+            seekBarContrast.setProgress(currentContrast);
+        }
+        if (currentSaturation!=-1){
+            seekBarSaturation.setProgress(currentSaturation);
+        }
 
 
 

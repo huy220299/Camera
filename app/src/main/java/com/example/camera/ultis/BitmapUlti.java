@@ -56,6 +56,7 @@ public class BitmapUlti {
     }
 
     //    _____________________
+    //param max -255 255
     public static Bitmap adjustSaturation(Bitmap bm, float value) {
         value = cleanValue(value, 100);
         if (value == 0) {
@@ -86,7 +87,7 @@ public class BitmapUlti {
 
         return sat;
     }
-
+//param -150 150
     public static Bitmap adjustBrightness(Bitmap bm, float brightness) {
         ColorMatrix cm = new ColorMatrix(new float[]
                 {
@@ -105,7 +106,7 @@ public class BitmapUlti {
 
         return bri;
     }
-
+//param 0 - 10
     public static Bitmap adjustedContrast(Bitmap bm, float contrast) {
         ColorMatrix cm = new ColorMatrix(new float[]
                 {
@@ -124,6 +125,38 @@ public class BitmapUlti {
 
         return con;
     }
+
+    public static Bitmap adjustedBitmap(Bitmap bm, float brightness, float contrast, float saturation) {
+       float b=brightness;
+       float c = contrast;
+       float s =saturation;
+       float t = (float) ((1.0 - c) / 2.0);
+       float lumR = 0.3086f;
+       float lumG = 0.6094f;
+       float lumB = 0.0820f;
+       float sr = (1 - s) * lumR;
+       float sg = (1 - s) * lumG;
+       float sb = (1 - s) * lumB;
+
+
+        ColorMatrix cm = new ColorMatrix(new float[]
+                {
+                        c*(sr+s), c*sr, c*sr, 0, 0,
+                        c*sg, c*(sg+s), c*sg, 0, 0,
+                        c*sb, c*sb, c*(sb+s), 0, 0,
+                        0, 0, 0, 1, 0,
+                        t+b,t+b,t+b,0,1,
+                });
+        Bitmap con = Bitmap.createBitmap(bm.getWidth(), bm.getHeight(), bm.getConfig());
+
+        Canvas canvas = new Canvas(con);
+
+        Paint paint = new Paint();
+        paint.setColorFilter(new ColorMatrixColorFilter(cm));
+        canvas.drawBitmap(bm, 0, 0, paint);
+        return con;
+    }
+
 
     public static Bitmap blur(Bitmap bmp, int radius) {
         int w = bmp.getWidth();

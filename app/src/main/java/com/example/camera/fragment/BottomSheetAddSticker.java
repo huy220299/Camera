@@ -24,7 +24,6 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.tabs.TabLayout;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class BottomSheetAddSticker extends BottomSheetDialogFragment {
@@ -125,7 +124,7 @@ public class BottomSheetAddSticker extends BottomSheetDialogFragment {
 
     private void addTabs(ViewPager viewPager) {
         ViewPagerPackStickerAdapter adapter = new ViewPagerPackStickerAdapter(getChildFragmentManager());
-        List<String> list = new ArrayList<>();
+        List<String> list ;
         list = Common.getStickerFromAssets(getContext());
         for (int i = 0; i < list.size(); i++) {
             adapter.addFrag(new DetailPackStickerFragment(list.get(i)), list.get(i));
