@@ -74,7 +74,6 @@ public class FileUtil {
       ContentValues contentValues = new ContentValues();
       contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, name + ".jpg");
       contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "image/jpg");
-//      contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES);
       contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES);
       Uri imageUri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
       fos = resolver.openOutputStream(Objects.requireNonNull(imageUri));

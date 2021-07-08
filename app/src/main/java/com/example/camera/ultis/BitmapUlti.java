@@ -6,6 +6,7 @@ import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.os.Build;
 
 import java.io.ByteArrayOutputStream;
 
@@ -56,7 +57,7 @@ public class BitmapUlti {
     }
 
     //    _____________________
-    //param max -255 255
+    //  -255 255
     public static Bitmap adjustSaturation(Bitmap bm, float value) {
         value = cleanValue(value, 100);
         if (value == 0) {
@@ -87,8 +88,13 @@ public class BitmapUlti {
 
         return sat;
     }
-//param -150 150
+// -150 150
     public static Bitmap adjustBrightness(Bitmap bm, float brightness) {
+        brightness = brightness*3-150;
+        bm = bm.copy(Bitmap.Config.ARGB_8888,true);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            bm.setConfig(Bitmap.Config.ARGB_8888);
+        }
         ColorMatrix cm = new ColorMatrix(new float[]
                 {
                         1, 0, 0, 0, brightness,
@@ -106,8 +112,9 @@ public class BitmapUlti {
 
         return bri;
     }
-//param 0 - 10
+// 0 - 10
     public static Bitmap adjustedContrast(Bitmap bm, float contrast) {
+        contrast = contrast/10;
         ColorMatrix cm = new ColorMatrix(new float[]
                 {
                         contrast, 0, 0, 0, 0,
@@ -127,8 +134,9 @@ public class BitmapUlti {
     }
 
     public static Bitmap adjustedBitmap(Bitmap bm, float brightness, float contrast, float saturation) {
-       float b=brightness;
-       float c = contrast;
+        bm = bm.copy(Bitmap.Config.ARGB_8888,true);
+       float b=brightness*3-150;        //convert from progress
+       float c = contrast/10;
        float s =saturation;
        float t = (float) ((1.0 - c) / 2.0);
        float lumR = 0.3086f;

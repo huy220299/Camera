@@ -1,4 +1,4 @@
-package com.example.camera;
+package com.example.camera.adapter;
 
 import android.app.Activity;
 import android.content.Context;
@@ -12,6 +12,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.camera.R;
 
 public class TextStyleAdapter extends RecyclerView.Adapter<TextStyleAdapter.ViewHolder> {
     Context context;

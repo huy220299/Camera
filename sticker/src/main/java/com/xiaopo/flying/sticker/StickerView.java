@@ -792,6 +792,9 @@ public class StickerView extends FrameLayout {
   public Bitmap getBitmap(int width, int height){
     return createBitmap(width,height);
   }
+  public Bitmap getBitmap(){
+    return createBitmap();
+  }
 
   public void saveBitmap(@NonNull File file,Bitmap bm) {
     try {
@@ -802,9 +805,17 @@ public class StickerView extends FrameLayout {
     }
   }
 
-  @NonNull public Bitmap createBitmap(int width, int height) throws OutOfMemoryError {
+  @NonNull public Bitmap createBitmap() throws OutOfMemoryError {
     handlingSticker = null;
     Bitmap bitmap = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
+    Canvas canvas = new Canvas(bitmap);
+    this.draw(canvas);
+    return bitmap;
+  }
+
+  public Bitmap createBitmap(int width, int height) throws OutOfMemoryError {
+    handlingSticker = null;
+    Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
     Canvas canvas = new Canvas(bitmap);
     this.draw(canvas);
     return bitmap;

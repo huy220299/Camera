@@ -7,10 +7,14 @@ import android.view.View;
 import android.widget.RelativeLayout;
 
 import com.example.camera.R;
+import com.example.camera.ultis.FileUtil;
 import com.theartofdev.edmodo.cropper.CropImageView;
+
+import java.io.IOException;
 
 public class CropImageActivity extends BaseActivity implements View.OnClickListener {
     private RelativeLayout ratioDefault, ratio11, ratio43, ratio169, shapeRectangle, shapeOval, showGrid, btnRotate;
+    private RelativeLayout btnBack, btnDone;
     CropImageView imageView;
     Bitmap bmp;
 
@@ -18,6 +22,9 @@ public class CropImageActivity extends BaseActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_crop_image);
+
+        btnDone = findViewById(R.id.btnDone);
+
 
         btnRotate = findViewById(R.id.btnRotate);
         ratioDefault = findViewById(R.id.ratioDefault);
@@ -33,6 +40,8 @@ public class CropImageActivity extends BaseActivity implements View.OnClickListe
 
         byte[] bytes = getIntent().getByteArrayExtra("bitmapBytes");
         bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+
+
         imageView.setImageBitmap(bmp);
         btnRotate.setOnClickListener(this);
         ratioDefault.setOnClickListener(this);
@@ -42,6 +51,7 @@ public class CropImageActivity extends BaseActivity implements View.OnClickListe
         shapeRectangle.setOnClickListener(this);
         shapeOval.setOnClickListener(this);
         showGrid.setOnClickListener(this);
+        btnDone.setOnClickListener(this);
 
     }
 
@@ -75,6 +85,15 @@ public class CropImageActivity extends BaseActivity implements View.OnClickListe
                 break;
             case R.id.btnRotate:
                 imageView.rotateImage(90);
+                break;
+            case R.id.btnDone:
+
+                 Bitmap bm = imageView.getCroppedImage();
+                try {
+                    FileUtil.saveImage(CropImageActivity.this,bm,"test");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 break;
 
             default:

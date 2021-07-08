@@ -1,4 +1,4 @@
-package com.example.camera;
+package com.example.camera.adapter;
 
 
 import android.app.Activity;
@@ -12,6 +12,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.camera.R;
 import com.example.camera.model.FilterData;
 import com.example.camera.ultis.Common;
 

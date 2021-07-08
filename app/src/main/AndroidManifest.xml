@@ -18,22 +18,25 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Camera">
+        <activity android:name=".activity.PickPhotoActivity">
+
+        </activity>
         <activity android:name=".activity.CropImageActivity">
 
         </activity>
         <activity android:name=".activity.StartActivity">
-
-        </activity>
-        <activity android:name=".activity.PermissionActivity" />
-        <activity android:name=".activity.SaveActivity" />
-        <activity android:name=".activity.TestActivity" />
-        <activity android:name=".activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".activity.PermissionActivity" />
+        <activity android:name=".activity.SaveActivity" />
+        <activity android:name=".activity.TestActivity">
+
+        </activity>
+        <activity android:name=".activity.MainActivity"></activity>
     </application>
 
 </manifest>

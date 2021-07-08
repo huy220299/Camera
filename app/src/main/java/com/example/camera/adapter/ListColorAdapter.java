@@ -1,4 +1,4 @@
-package com.example.camera;
+package com.example.camera.adapter;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -9,6 +9,8 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.camera.R;
 
 public class ListColorAdapter extends RecyclerView.Adapter<ListColorAdapter.ViewHolder>{
     String[] listColor;

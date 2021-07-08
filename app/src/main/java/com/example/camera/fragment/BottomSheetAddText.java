@@ -22,8 +22,8 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.camera.ListColorAdapter;
-import com.example.camera.ListTextStyleAdapter;
+import com.example.camera.adapter.ListColorAdapter;
+import com.example.camera.adapter.ListTextStyleAdapter;
 import com.example.camera.R;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
