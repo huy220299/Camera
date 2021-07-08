@@ -31,7 +31,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class StartActivity extends BaseActivity {
-    public static int REQUEST_CODE =123;
+    public static int REQUEST_CODE = 123;
     private RelativeLayout btnCamera, btnPhoto;
     RecyclerView rcvBanner;
     List<String> urls;
@@ -50,7 +50,7 @@ public class StartActivity extends BaseActivity {
     TimerTask timerTask;
     int position;
     LinearLayoutManager layoutManager;
-    private  ImageView background1;
+    private ImageView background1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +59,7 @@ public class StartActivity extends BaseActivity {
 
         btnPhoto = findViewById(R.id.btnPhoto);
         background1 = findViewById(R.id.background1);
-        Bitmap  bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.img_banner);
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.img_banner);
 
         background1.setImageBitmap(BitmapUlti.rotateBitmap(bitmap));
 
@@ -69,7 +69,6 @@ public class StartActivity extends BaseActivity {
         });
 
 
-
 //        rcvBanner = findViewById(R.id.rcvBanner);
 //
 //        layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
@@ -77,8 +76,6 @@ public class StartActivity extends BaseActivity {
 //
 //        BannerAdapter bannerAdapter = new BannerAdapter(this, listBanner);
 //        rcvBanner.setAdapter(bannerAdapter);
-
-
 
 
 //        try {
@@ -108,8 +105,6 @@ public class StartActivity extends BaseActivity {
 //        }
 
 
-
-
     }
 
     @Override
@@ -117,18 +112,16 @@ public class StartActivity extends BaseActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK && requestCode == REQUEST_CODE) {
             Uri myUri = data.getData();
-            ImageDecoder.Source source = ImageDecoder.createSource(this.getContentResolver(), myUri);
-            try {
-                Bitmap myBitmap = ImageDecoder.decodeBitmap(source);
+//            Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), myUri);
+//
+//            ImageDecoder.Source source = ImageDecoder.createSource(this.getContentResolver(), myUri);
+//            Bitmap myBitmap = ImageDecoder.decodeBitmap(source);
 
-                Intent intent = new Intent(StartActivity.this, MainActivity.class);
-                intent.putExtra("imageUri", myUri.toString());
-                startActivity(intent);
+
+            Intent intent = new Intent(StartActivity.this, MainActivity.class);
+            intent.putExtra("imageUri", myUri.toString());
+            startActivity(intent);
 //                background1.setImageBitmap(myBitmap);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
 
         }
     }
@@ -169,8 +162,8 @@ public class StartActivity extends BaseActivity {
                         try {
                             position++;
                             rcvBanner.smoothScrollToPosition(position);
-                        }catch (Exception e){
-                            Log.e("~~~",new Gson().toJson(e));
+                        } catch (Exception e) {
+                            Log.e("~~~", new Gson().toJson(e));
                         }
                     }
                 }
@@ -199,9 +192,9 @@ public class StartActivity extends BaseActivity {
 
         @Override
         public void onBindViewHolder(@NonNull BannerHolder holder, int position) {
-            holder.imgBanner.getLayoutParams().width = Common.getScreenWidth() /3;
-            holder.imgBanner.getLayoutParams().height = Common.getScreenWidth() /6;
-            int url = urls[position%urls.length];
+            holder.imgBanner.getLayoutParams().width = Common.getScreenWidth() / 3;
+            holder.imgBanner.getLayoutParams().height = Common.getScreenWidth() / 6;
+            int url = urls[position % urls.length];
             Glide.with(context).load(url).into(holder.imgBanner);
         }
 

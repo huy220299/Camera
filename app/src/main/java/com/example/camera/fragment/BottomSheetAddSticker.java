@@ -108,6 +108,12 @@ public class BottomSheetAddSticker extends BottomSheetDialogFragment {
             @Override
             public void onPageSelected(int position) {
                 adapter.setItemSelected(position);
+                if (position<adapter.getItemCount()-3){
+                    recyclerView.scrollToPosition(position+3);
+                }else {
+                    recyclerView.scrollToPosition(position);
+                }
+
             }
 
             @Override

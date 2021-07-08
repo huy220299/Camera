@@ -87,4 +87,5 @@ public class StickerAdapter extends RecyclerView.Adapter<StickerAdapter.ViewHold
       notifyDataSetChanged();
 
     }
+
 }
