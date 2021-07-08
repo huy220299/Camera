@@ -15,8 +15,10 @@ import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.MediaStore;
 import android.text.Layout;
 import android.util.Log;
 import android.view.View;
@@ -26,6 +28,7 @@ import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -329,7 +332,7 @@ public class MainActivity extends BaseActivity implements FilterDemoAdapter.Item
 
                     Intent intent = new Intent(MainActivity.this, CropImageActivity.class);
                         intent.putExtra("bitmapBytes", BitmapUlti.convertToArray(fBitmap));
-                        startActivity(intent);
+                        startActivityForResult(intent, 123);
 //                    } else {
 //                        Toast.makeText(MainActivity.this, "the file is null", Toast.LENGTH_SHORT).show();
 //                    }
@@ -361,25 +364,30 @@ public class MainActivity extends BaseActivity implements FilterDemoAdapter.Item
         tvSaturation = findViewById(R.id.tvSaturation);
 
         //seekbar
-        if (currentBright!=-1){
+
             seekBarBrightness.setProgress(currentBright);
-        }{
-            seekBarBrightness.setProgress(50);
-        }
-        if (currentContrast!=-1){
+            tvBrightness.setText(currentBright+ "%");
+
             seekBarContrast.setProgress(currentContrast);
-        }
-        if (currentSaturation != -1) {
+            tvContrast.setText((int) (currentContrast/10)+"");
+
+
             seekBarSaturation.setProgress(currentSaturation);
-        }
+            tvSaturation.setText(currentSaturation+"");
+
 
 
         //set main image
         Uri myUri = Uri.parse(getIntent().getStringExtra("imageUri"));
         if (myUri != null) {
             try {
-                ImageDecoder.Source source = ImageDecoder.createSource(this.getContentResolver(), myUri);
-                mBitmap = ImageDecoder.decodeBitmap(source);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                    ImageDecoder.Source source = ImageDecoder.createSource(this.getContentResolver(), myUri);
+                    mBitmap = ImageDecoder.decodeBitmap(source);
+                }else {
+                    mBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), myUri);
+                }
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -517,6 +525,18 @@ public class MainActivity extends BaseActivity implements FilterDemoAdapter.Item
         mImageView.setFilterWithConfig(mCurrentConfig);
 
 
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode== 123){
+            if (resultCode==RESULT_OK){
+                byte[] bytes = data.getByteArrayExtra("resultBitmap");
+                Bitmap resultBitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+               mImageView.setImageBitmap(resultBitmap);
+            }
+        }
     }
 
     public static Bitmap mark(Bitmap src, String watermark) {

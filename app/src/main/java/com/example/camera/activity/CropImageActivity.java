@@ -1,12 +1,16 @@
 package com.example.camera.activity;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.RelativeLayout;
 
+import androidx.annotation.Nullable;
+
 import com.example.camera.R;
+import com.example.camera.ultis.BitmapUlti;
 import com.example.camera.ultis.FileUtil;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
@@ -24,6 +28,7 @@ public class CropImageActivity extends BaseActivity implements View.OnClickListe
         setContentView(R.layout.activity_crop_image);
 
         btnDone = findViewById(R.id.btnDone);
+        btnBack = findViewById(R.id.btnBack);
 
 
         btnRotate = findViewById(R.id.btnRotate);
@@ -52,11 +57,19 @@ public class CropImageActivity extends BaseActivity implements View.OnClickListe
         shapeOval.setOnClickListener(this);
         showGrid.setOnClickListener(this);
         btnDone.setOnClickListener(this);
+        btnBack.setOnClickListener(this);
 
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
     public void onClick(View v) {
+        Bitmap bm = imageView.getCroppedImage();
+
         switch (v.getId()){
             case R.id.ratioDefault:
                 imageView.clearAspectRatio();
@@ -88,12 +101,18 @@ public class CropImageActivity extends BaseActivity implements View.OnClickListe
                 break;
             case R.id.btnDone:
 
-                 Bitmap bm = imageView.getCroppedImage();
                 try {
                     FileUtil.saveImage(CropImageActivity.this,bm,"test");
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+                break;
+            case R.id.btnBack:
+                Intent intent = new Intent();
+
+                intent.putExtra("resultBitmap",BitmapUlti.convertToArray(bm));
+                setResult(RESULT_OK,intent);
+                finish();
                 break;
 
             default:
