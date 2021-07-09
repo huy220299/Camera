@@ -6,7 +6,10 @@ import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.util.Log;
+import android.view.View;
 
 import java.io.ByteArrayOutputStream;
 
@@ -24,6 +27,7 @@ public class BitmapUlti {
         } else {                     //scale bitmap by width
             mBitmap = BitmapUlti.getResizedBitmap(mBitmap, Common.getScreenWidth(), newHeight);
         }
+        Log.e("~~~", "weight: "+mBitmap.getWidth()+"height: "+mBitmap.getHeight());
         return mBitmap;
     }
 
@@ -37,6 +41,18 @@ public class BitmapUlti {
         Matrix matrix = new Matrix();
         matrix.postRotate(15);
         return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
+    }
+
+    public static Bitmap getBitmapFromView(View view) {
+        Bitmap returnedBitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(),Bitmap.Config.ARGB_8888);
+
+        Canvas canvas = new Canvas(returnedBitmap);
+        Drawable bgDrawable =view.getBackground();
+        if (bgDrawable!=null){
+            bgDrawable.draw(canvas);
+        }
+        view.draw(canvas);
+        return returnedBitmap;
     }
 
     public static Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight) {

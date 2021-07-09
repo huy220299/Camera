@@ -5,6 +5,7 @@ import java.io.Serializable;
 public class Butket implements Serializable {
     private String name;
     private String firstImageContainedPath;
+    private boolean isOpened;
 
     public Butket() {
     }
@@ -12,6 +13,7 @@ public class Butket implements Serializable {
     public Butket(String name, String firstImageContainedPath) {
         this.name = name;
         this.firstImageContainedPath = firstImageContainedPath;
+        isOpened=false;
     }
 
     public String getName() {
@@ -28,5 +30,13 @@ public class Butket implements Serializable {
 
     public void setFirstImageContainedPath(String firstImageContainedPath) {
         this.firstImageContainedPath = firstImageContainedPath;
+    }
+
+    public boolean isOpened() {
+        return isOpened;
+    }
+
+    public void setOpened(boolean opened) {
+        isOpened = opened;
     }
 }

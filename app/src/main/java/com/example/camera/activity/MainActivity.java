@@ -9,16 +9,12 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.ImageDecoder;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.MediaStore;
 import android.text.Layout;
 import android.util.Log;
 import android.view.View;
@@ -28,7 +24,6 @@ import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -52,6 +47,7 @@ import com.xiaopo.flying.sticker.ZoomIconEvent;
 import org.wysaid.nativePort.CGENativeLibrary;
 import org.wysaid.view.ImageGLSurfaceView;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -92,17 +88,12 @@ public class MainActivity extends BaseActivity implements FilterDemoAdapter.Item
 
     private boolean isVisibility = true;
     private int currentFont;
-    private Bitmap bm;
+    private Bitmap bm, y;
     private Drawable addedSticker;
     private StickerView stickerView;
 
     BottomSheetAddText bottomSheetAddText;
     BottomSheetAddSticker bottomSheetAddSticker;
-
-
-
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -314,28 +305,45 @@ public class MainActivity extends BaseActivity implements FilterDemoAdapter.Item
 
         @Override
         protected void onPostExecute(Void unused) {
+
+         /*   photoView.getLayoutParams().height = 1309;
+            photoView.getLayoutParams().width = 872;*/
+//            photoView.setScaleType(ImageView.ScaleType.FIT_XY);
+//            photoView.setMaxHeight(1309);
+//            photoView.setMaxWidth(872);
             photoView.setImageBitmap(bm);
+//            photoView.setLayoutParams(new FrameLayout.LayoutParams(mImageView.getWidth(),mImageView.getHeight()));
+            photoView.getLayoutParams().width = mImageView.getWidth();
+            photoView.getLayoutParams().height = mImageView.getHeight();
+            photoView.requestLayout();
+            y = BitmapUlti.getBitmapFromView(photoView);
             photoView.setVisibility(View.VISIBLE);
 
             Handler handler = new Handler();
             handler.postAtTime(new Runnable() {
                 @Override
                 public void run() {
-//                    File file = FileUtil.getNewFile(MainActivity.this, "VintageCamera");
-//                    if (file != null) {
 
-                        Bitmap fBitmap = stickerView.getBitmap(mImageView.getWidth(), mImageView.getHeight());
+                        Bitmap fBitmap = stickerView.getBitmap();
+                        stickerView.getLayoutParams();
+                        Bitmap x = BitmapUlti.getBitmapFromView(stickerView);
 
+                    File f = new File("123");
+                    stickerView.save(f,stickerView.getWidth(), stickerView.getHeight());
+//                        fBitmap= BitmapUlti.getResizedBitmap(fBitmap,mImageView.getWidth(), mImageView.getHeight());
+//                        Bitmap fBitmap = stickerView.getBitmap();
                         photoView.setVisibility(View.INVISIBLE);
 
+//                    try {
 //                        FileUtil.saveImage(MainActivity.this,fBitmap, String.valueOf(Calendar.getInstance().getTimeInMillis()));
-
-                    Intent intent = new Intent(MainActivity.this, CropImageActivity.class);
-                        intent.putExtra("bitmapBytes", BitmapUlti.convertToArray(fBitmap));
-                        startActivityForResult(intent, 123);
-//                    } else {
-//                        Toast.makeText(MainActivity.this, "the file is null", Toast.LENGTH_SHORT).show();
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
 //                    }
+
+                    Intent intent = new Intent(MainActivity.this, SaveActivity.class);
+                        intent.putExtra("bitmapBytes", BitmapUlti.convertToArray(fBitmap));
+                        startActivity(intent);
+
                 }
             }, 500);
         }
@@ -368,33 +376,17 @@ public class MainActivity extends BaseActivity implements FilterDemoAdapter.Item
             seekBarBrightness.setProgress(currentBright);
             tvBrightness.setText(currentBright+ "%");
 
-            seekBarContrast.setProgress(currentContrast);
-            tvContrast.setText((int) (currentContrast/10)+"");
+        seekBarContrast.setProgress(currentContrast);
+        tvContrast.setText((int) (currentContrast / 10) + "");
 
 
-            seekBarSaturation.setProgress(currentSaturation);
-            tvSaturation.setText(currentSaturation+"");
+        seekBarSaturation.setProgress(currentSaturation);
+        tvSaturation.setText(currentSaturation + "");
 
 
-
-        //set main image
-        Uri myUri = Uri.parse(getIntent().getStringExtra("imageUri"));
-        if (myUri != null) {
-            try {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                    ImageDecoder.Source source = ImageDecoder.createSource(this.getContentResolver(), myUri);
-                    mBitmap = ImageDecoder.decodeBitmap(source);
-                }else {
-                    mBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), myUri);
-                }
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } else {
-            mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.mg2);
-        }
-//        mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.mg2);
+        //get bitmap from intent
+        String myUri = (getIntent().getStringExtra("imageUri"));
+        mBitmap = BitmapFactory.decodeFile(myUri, null);
         //scale bitmap
         mBitmap = BitmapUlti.fitScreen(mBitmap);
 
@@ -405,7 +397,7 @@ public class MainActivity extends BaseActivity implements FilterDemoAdapter.Item
             mImageView.setFilterIntensity(1.0f);
             CGENativeLibrary.setLoadImageCallback(mLoadImageCallback, null);
         });
-        mImageView.setDisplayMode(ImageGLSurfaceView.DisplayMode.DISPLAY_ASPECT_FIT);
+       // mImageView.setDisplayMode(ImageGLSurfaceView.DisplayMode.DISPLAY_ASPECT_FIT);
 
 
         //set up sticker view
@@ -432,6 +424,7 @@ public class MainActivity extends BaseActivity implements FilterDemoAdapter.Item
         stickerView.setIcons(Arrays.asList(deleteIcon, zoomIcon, flipIcon));
 //        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(mBitmap.getWidth(), mBitmap.getHeight());
 //        stickerView.setLayoutParams(layoutParams);
+
         stickerView.getLayoutParams().width= mBitmap.getWidth();
         stickerView.getLayoutParams().height= mBitmap.getHeight();
 
@@ -456,6 +449,7 @@ public class MainActivity extends BaseActivity implements FilterDemoAdapter.Item
     }
     private void addTextSticker(String text, String textStyle,int align, String stringColor) {
         TextSticker sticker = new TextSticker(this);
+
         sticker.setText(text);
         sticker.setTextColor(Color.parseColor(stringColor));
         if (align==1){
