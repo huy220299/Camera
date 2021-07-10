@@ -36,10 +36,10 @@ public class BitmapUlti {
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
         return stream.toByteArray();
     }
-    public static Bitmap rotateBitmap(Bitmap source)
+    public static Bitmap rotateBitmap(Bitmap source, int degrees)
     {
         Matrix matrix = new Matrix();
-        matrix.postRotate(15);
+        matrix.postRotate(degrees);
         return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
     }
 

@@ -48,7 +48,6 @@ public class FilterDemoAdapter extends RecyclerView.Adapter<FilterDemoAdapter.Vi
 
         holder.itemView.getLayoutParams().width = Common.getScreenWidth() /5;
 
-
        FilterData currentItem = listFilter.get(position);
 
         holder.img.setSurfaceCreatedCallback(() -> {

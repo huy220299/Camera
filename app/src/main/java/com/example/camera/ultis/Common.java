@@ -58,4 +58,16 @@ public class Common {
         }
         return list;
     }
+
+    public static List<String> getNameFilter(Context context) {
+        List<String> list = new ArrayList<>();
+        AssetManager assetManager;
+        try {
+            assetManager = context.getAssets();
+            list = Arrays.asList(assetManager.list("filter"));
+        } catch (IOException e) {
+
+        }
+        return list;
+    }
 }

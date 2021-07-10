@@ -3,6 +3,7 @@ package com.example.camera.ultis;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
@@ -68,6 +69,7 @@ public class FileUtil {
   }
 
   public static void saveImage(Context context, Bitmap bitmap, @NonNull String name) throws IOException {
+    bitmap = bitmap.copy(Bitmap.Config.ARGB_8888,true);
     OutputStream fos;
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
       ContentResolver resolver = context.getContentResolver();
@@ -77,10 +79,14 @@ public class FileUtil {
       contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES);
       Uri imageUri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
       fos = resolver.openOutputStream(Objects.requireNonNull(imageUri));
+
+      context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, imageUri));
     } else {
       String imagesDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString();
       File image = new File(imagesDir, name + ".jpg");
       fos = new FileOutputStream(image);
+      context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(image)));
+
     }
     bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
     Objects.requireNonNull(fos).close();

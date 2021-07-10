@@ -7,7 +7,7 @@ android {
 
     defaultConfig {
         applicationId "com.example.camera"
-        minSdkVersion 16
+        minSdkVersion 18
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
@@ -53,6 +53,10 @@ dependencies {
     //crop image
     api 'com.theartofdev.edmodo:android-image-cropper:2.8.0'
 
+    //zoom layout
+    implementation 'com.otaliastudios:zoomlayout:1.8.0'
+
+    implementation 'com.github.chrisbanes:PhotoView:2.3.0'
 
 
 }

@@ -5,9 +5,9 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -16,6 +16,8 @@ import androidx.annotation.NonNull;
 
 import com.example.camera.R;
 import com.example.camera.ultis.BitmapUlti;
+import com.example.camera.ultis.Common;
+import com.google.gson.Gson;
 
 public class StartActivity extends BaseActivity {
     public static int REQUEST_CODE = 123;
@@ -34,35 +36,15 @@ public class StartActivity extends BaseActivity {
         background1 = findViewById(R.id.background1);
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.img_banner);
 
-        background1.setImageBitmap(BitmapUlti.rotateBitmap(bitmap));
+        background1.setImageBitmap(BitmapUlti.rotateBitmap(bitmap,15));
+
 
         btnPhoto.setOnClickListener(v -> {
-//            Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-//            startActivityForResult(gallery, REQUEST_CODE);
             checkPermissions();
-
         });
 
 
 
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK && requestCode == REQUEST_CODE) {
-            Uri myUri = data.getData();
-//            Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), myUri);
-//
-//            ImageDecoder.Source source = ImageDecoder.createSource(this.getContentResolver(), myUri);
-//            Bitmap myBitmap = ImageDecoder.decodeBitmap(source);
-
-            Intent intent = new Intent(StartActivity.this, MainActivity.class);
-            intent.putExtra("imageUri", myUri.toString());
-
-            startActivity(intent);
-
-        }
     }
 
     @Override

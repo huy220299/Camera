@@ -1,17 +1,18 @@
 package com.example.camera.activity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.util.Base64;
 import android.view.View;
 import android.widget.RelativeLayout;
-
-import androidx.annotation.Nullable;
 
 import com.example.camera.R;
 import com.example.camera.ultis.BitmapUlti;
 import com.example.camera.ultis.FileUtil;
+import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.io.IOException;
@@ -43,11 +44,13 @@ public class CropImageActivity extends BaseActivity implements View.OnClickListe
 
         imageView = findViewById(R.id.imageView);
 
-        byte[] bytes = getIntent().getByteArrayExtra("bitmapBytes");
-        bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+        SharedPreferences preferences = getSharedPreferences("test",MODE_PRIVATE);
+        String image = preferences.getString("Image", "");
 
-
+        byte[] imageAsBytes = Base64.decode(image.getBytes(), Base64.DEFAULT);
+        Bitmap bmp = BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length);
         imageView.setImageBitmap(bmp);
+
         btnRotate.setOnClickListener(this);
         ratioDefault.setOnClickListener(this);
         ratio11.setOnClickListener(this);
@@ -69,6 +72,7 @@ public class CropImageActivity extends BaseActivity implements View.OnClickListe
     @Override
     public void onClick(View v) {
         Bitmap bm = imageView.getCroppedImage();
+        CropImage.toOvalBitmap(bm);
 
         switch (v.getId()){
             case R.id.ratioDefault:
@@ -102,7 +106,7 @@ public class CropImageActivity extends BaseActivity implements View.OnClickListe
             case R.id.btnDone:
 
                 try {
-                    FileUtil.saveImage(CropImageActivity.this,bm,"test");
+                    FileUtil.saveImage(CropImageActivity.this,bm, String.valueOf(System.currentTimeMillis() % 1000));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -121,4 +125,5 @@ public class CropImageActivity extends BaseActivity implements View.OnClickListe
 
         }
     }
+
 }
