@@ -19,6 +19,7 @@
             android:id="@+id/btnBack"
             android:layout_width="@dimen/_30sdp"
             android:layout_height="@dimen/_30sdp"
+            android:background="@drawable/pressed"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent">
@@ -36,6 +37,7 @@
             android:layout_width="@dimen/_30sdp"
             android:layout_height="@dimen/_30sdp"
             android:layout_margin="@dimen/_20sdp"
+            android:background="@drawable/pressed"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" >
@@ -44,7 +46,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 app:tint="@color/white"
-                android:src="@drawable/save"/>
+                android:src="@drawable/done"/>
         </RelativeLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -67,7 +69,7 @@
         app:horizontalPanEnabled="true"
         app:verticalPanEnabled="true"
         app:zoomEnabled="true"
-        app:flingEnabled="true"
+        app:flingEnabled="false"
         app:scrollEnabled="true"
         app:oneFingerScrollEnabled="false"
         app:twoFingersScrollEnabled="true"
@@ -114,6 +116,13 @@
                     />
 
             </com.xiaopo.flying.sticker.StickerView>
+            <ImageView
+                android:id="@+id/imageViewFrame"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:alpha=".9"
+
+                />
         </RelativeLayout>
 
 
@@ -150,6 +159,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/guideline">
 
+        //________________________________________________________
+        // recycler view list filter
         <androidx.recyclerview.widget.RecyclerView
             android:visibility="visible"
             android:id="@+id/recyclerView"
@@ -161,6 +172,38 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:listitem="@layout/item_filter_demo" />
 
+        //____________________overlay_______________________________
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:visibility="visible"
+            android:id="@+id/linearLayoutOverlay"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="@+id/recyclerView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/recyclerView">
+           <com.google.android.material.tabs.TabLayout
+               android:id="@+id/tabLayoutOverlay"
+               android:layout_width="0dp"
+               android:layout_height="30dp"
+               app:tabTextColor="@color/white"
+               app:tabMode="scrollable"
+               app:tabIndicatorColor="@color/white"
+               android:background="@color/main_color"
+               app:layout_constraintTop_toTopOf="parent"
+               app:layout_constraintStart_toStartOf="parent"
+               app:layout_constraintEnd_toEndOf="parent"/>
+
+            <androidx.viewpager.widget.ViewPager
+                android:id="@+id/viewPagerOverlay"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tabLayoutOverlay" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        //______________________________________________________
+        // Multi change
         <LinearLayout
             android:visibility="gone"
             android:gravity="center"
@@ -291,9 +334,8 @@
 
         </LinearLayout>
 
-
-
-
+        //______________________________________________________
+        // icon action
         <LinearLayout
             android:id="@+id/linearLayout"
             android:layout_width="match_parent"
@@ -309,6 +351,7 @@
                 android:id="@+id/btnAddFilter"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
+                android:background="@drawable/pressed"
                 android:layout_weight="1">
 
                 <ImageView
@@ -324,6 +367,7 @@
                 android:id="@+id/btnAddSticker"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
+                android:background="@drawable/pressed"
                 android:layout_weight="1">
 
                 <ImageView
@@ -339,6 +383,7 @@
                 android:id="@+id/btnMultiChange"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
+                android:background="@drawable/pressed"
                 android:layout_weight="1">
 
                 <ImageView
@@ -353,6 +398,7 @@
                 android:id="@+id/btnAddDate"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
+                android:background="@drawable/pressed"
                 android:layout_weight="1">
 
                 <ImageView
@@ -367,7 +413,8 @@
                 android:id="@+id/btnAddText"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1">
+                android:layout_weight="1"
+                android:background="@drawable/pressed">
 
                 <ImageView
 
@@ -383,7 +430,8 @@
                 android:id="@+id/btnCrop"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1">
+                android:layout_weight="1"
+                android:background="@drawable/pressed">
 
                 <ImageView
                     android:layout_width="@dimen/icon_size"

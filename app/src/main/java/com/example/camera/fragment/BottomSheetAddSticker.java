@@ -17,7 +17,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.example.camera.R;
 import com.example.camera.adapter.StickerAdapter;
-import com.example.camera.adapter.ViewPagerPackStickerAdapter;
+import com.example.camera.adapter.ViewPagerAddFragmentsAdapter;
 import com.example.camera.ultis.Common;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
@@ -129,11 +129,11 @@ public class BottomSheetAddSticker extends BottomSheetDialogFragment {
 
 
     private void addTabs(ViewPager viewPager) {
-        ViewPagerPackStickerAdapter adapter = new ViewPagerPackStickerAdapter(getChildFragmentManager());
+        ViewPagerAddFragmentsAdapter adapter = new ViewPagerAddFragmentsAdapter(getChildFragmentManager());
         List<String> list ;
         list = Common.getStickerFromAssets(getContext());
         for (int i = 0; i < list.size(); i++) {
-            adapter.addFrag(new DetailPackStickerFragment(list.get(i)), list.get(i));
+            adapter.addFrag(new DetailPackStickerFragment(list.get(i)));
         }
         viewPager.setAdapter(adapter);
     }

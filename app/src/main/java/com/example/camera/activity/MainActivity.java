@@ -2,9 +2,6 @@ package com.example.camera.activity;
 
 
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.AssetManager;
@@ -14,12 +11,14 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.Layout;
+import android.text.TextPaint;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
@@ -29,24 +28,31 @@ import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager.widget.ViewPager;
 
 import com.example.camera.R;
 import com.example.camera.adapter.FilterDemoAdapter;
+import com.example.camera.adapter.ViewPagerAddFragmentsAdapter;
+import com.example.camera.callback.EditTextCallback;
 import com.example.camera.fragment.BottomSheetAddSticker;
 import com.example.camera.fragment.BottomSheetAddText;
 import com.example.camera.fragment.CustomDialogClass;
+import com.example.camera.fragment.DetailPackOverlayFragment;
 import com.example.camera.fragment.DetailPackStickerFragment;
 import com.example.camera.model.FilterData;
 import com.example.camera.ultis.BitmapUlti;
 import com.example.camera.ultis.Common;
-import com.otaliastudios.zoom.ZoomLayout;
+import com.google.android.material.tabs.TabLayout;
 import com.xiaopo.flying.sticker.BitmapStickerIcon;
 import com.xiaopo.flying.sticker.DeleteIconEvent;
 import com.xiaopo.flying.sticker.DrawableSticker;
 import com.xiaopo.flying.sticker.FlipHorizontallyEvent;
+import com.xiaopo.flying.sticker.Sticker;
 import com.xiaopo.flying.sticker.StickerView;
 import com.xiaopo.flying.sticker.TextSticker;
 import com.xiaopo.flying.sticker.ZoomIconEvent;
@@ -75,21 +81,24 @@ public class MainActivity extends BaseActivity implements FilterDemoAdapter.Item
     private int currentBright = 50, currentContrast = 10, currentSaturation = 0;
     private TextView tvBrightness, tvContrast, tvSaturation;
     private RelativeLayout btnSave, btnBack, btnMultiChange;
-    private ImageView photoView;
+    private ImageView imageViewFrame;
     private LinearLayout linearLayoutMultiChange;
 
+
     private RelativeLayout btnAddText, btnAddSticker, btnCrop, btnAddFilter, btnAddDate;
+    private ConstraintLayout linearLayoutOverlay;
 
     private boolean isVisibility = true, isDone;
-    private int currentFont;
+    private Typeface currentFont;
     private Bitmap bm, y;
     private Drawable addedSticker;
     private StickerView stickerView;
-    private ZoomLayout zoomLayout;
-    private int w, h;
+    private TextSticker currentTextSticker;
+    private BottomSheetAddText bottomSheetAddText;
+    private BottomSheetAddSticker bottomSheetAddSticker;
+    private TabLayout tabLayoutOverlay;
+    private ViewPager viewPagerOverlay;
 
-    BottomSheetAddText bottomSheetAddText;
-    BottomSheetAddSticker bottomSheetAddSticker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -161,7 +170,7 @@ public class MainActivity extends BaseActivity implements FilterDemoAdapter.Item
                 Bitmap bitmap = BitmapUlti.adjustBrightness(bitmapFiltered, currentBright);
                 bitmap = BitmapUlti.adjustSaturation(bitmap, currentSaturation);
                 bitmap = BitmapUlti.adjustedContrast(bitmap, progress);
-                Log.e("~~~", progress + "_______" + currentContrast + "_______" + currentSaturation);
+
                 mImageView.setImageBitmap(bitmap);
 
                 currentContrast = progress;
@@ -207,7 +216,10 @@ public class MainActivity extends BaseActivity implements FilterDemoAdapter.Item
         seekBarChange();
         btnAddDate.setOnClickListener(v -> {
 
-                });
+            recyclerView.setVisibility(View.GONE);
+            linearLayoutMultiChange.setVisibility(View.GONE);
+            linearLayoutOverlay.setVisibility(View.VISIBLE);
+        });
 
         btnMultiChange.setOnClickListener(v ->
         {
@@ -244,18 +256,22 @@ public class MainActivity extends BaseActivity implements FilterDemoAdapter.Item
             new getBitmap().execute();
         });
         btnBack.setOnClickListener(v -> {
-           onBackPressed();
+            onBackPressed();
         });
 
         btnAddText.setOnClickListener(v -> {
-            Bundle bundle = new Bundle();
+            btnAddText.setEnabled(false);
+            Handler handler = new Handler(Looper.getMainLooper());
+            handler.postDelayed(() -> btnAddText.setEnabled(true), 2000);
             bottomSheetAddText = new BottomSheetAddText();
             bottomSheetAddText.show(getSupportFragmentManager(), "ModalBottomSheet");
-            bottomSheetAddText.setArguments(bundle);
+
         });
 
-
         btnAddSticker.setOnClickListener(v -> {
+            btnAddText.setEnabled(false);
+            Handler handler = new Handler(Looper.getMainLooper());
+            handler.postDelayed(() -> btnAddText.setEnabled(true), 2000);
 
             Bundle bundle = new Bundle();
             bottomSheetAddSticker = new BottomSheetAddSticker();
@@ -264,7 +280,81 @@ public class MainActivity extends BaseActivity implements FilterDemoAdapter.Item
 
         });
 
+        stickerView.setOnStickerOperationListener(new StickerView.OnStickerOperationListener() {
+            @Override
+            public void onStickerAdded(@NonNull Sticker sticker) {
 
+            }
+
+            @Override
+            public void onStickerClicked(@NonNull Sticker sticker) {
+
+            }
+
+            @Override
+            public void onStickerDeleted(@NonNull Sticker sticker) {
+
+            }
+
+            @Override
+            public void onStickerDragFinished(@NonNull Sticker sticker) {
+
+            }
+
+            @Override
+            public void onStickerTouchedDown(@NonNull Sticker sticker) {
+
+            }
+
+            @Override
+            public void onStickerZoomFinished(@NonNull Sticker sticker) {
+
+            }
+
+            @Override
+            public void onStickerFlipped(@NonNull Sticker sticker) {
+
+            }
+
+            @Override
+            public void onStickerDoubleTapped(@NonNull Sticker sticker) {
+
+                if (sticker instanceof TextSticker) {
+                    TextPaint textPaint = ((TextSticker) sticker).getTextPaint();
+                    int align = 0;
+                    switch (textPaint.getTextAlign()) {
+                        case LEFT:
+                            align = 0;
+                            break;
+                        case CENTER:
+                            align = 1;
+                            break;
+                        case RIGHT:
+                            align = 2;
+                            break;
+                    }
+                    currentTextSticker = (TextSticker) sticker;
+                    stickerView.remove(sticker);
+//                    stickerView.invalidate();
+                    currentFont = textPaint.getTypeface();
+                    Bundle bundle = new Bundle();
+
+                    bundle.putInt("color", textPaint.getColor());
+                    bundle.putInt("align", align);
+                    bundle.putString("text", ((TextSticker) sticker).getText());
+
+                    bottomSheetAddText = new BottomSheetAddText();
+                    bottomSheetAddText.setArguments(bundle);
+                    bottomSheetAddText.show(getSupportFragmentManager(), "ModalBottomSheet");
+
+                }
+
+            }
+
+            @Override
+            public void onTextStickerDoubleTapped(@NonNull TextSticker textSticker) {
+            }
+        });
     }
 
     @Override
@@ -282,27 +372,11 @@ public class MainActivity extends BaseActivity implements FilterDemoAdapter.Item
 
     @Override
     public void onBackPressed() {
-//        showDialog(this);
+
         CustomDialogClass cdd=new CustomDialogClass(MainActivity.this);
+        cdd.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
         cdd.show();
     }
-
-    private void showDialog(Context context) {
-        new AlertDialog.Builder(context)
-                .setMessage("Are you sure you want to back?")
-                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        finish();
-                        startActivity(new Intent(context,StartActivity.class));
-                    }
-                })
-
-                // A null listener allows the button to dismiss the dialog and take no further action.
-                .setNegativeButton("Cancel", null)
-                .setIcon(android.R.drawable.ic_dialog_alert)
-                .show();
-    }
-
 
     @Override
     public void onStickerClicked(Bundle bundle) {
@@ -356,8 +430,8 @@ public class MainActivity extends BaseActivity implements FilterDemoAdapter.Item
     }
 
     private void initView() {
-        zoomLayout = findViewById(R.id.zoomLayout);
-        photoView = findViewById(R.id.photoView);
+
+        imageViewFrame = findViewById(R.id.imageViewFrame);
         btnAddText = findViewById(R.id.btnAddText);
         btnAddFilter = findViewById(R.id.btnAddFilter);
         btnAddDate = findViewById(R.id.btnAddDate);
@@ -378,6 +452,8 @@ public class MainActivity extends BaseActivity implements FilterDemoAdapter.Item
         tvContrast = findViewById(R.id.tvContrast);
         tvSaturation = findViewById(R.id.tvSaturation);
 
+        linearLayoutOverlay = findViewById(R.id.linearLayoutOverlay);
+
         //seekbar
 
         seekBarBrightness.setProgress(currentBright);
@@ -396,9 +472,8 @@ public class MainActivity extends BaseActivity implements FilterDemoAdapter.Item
         mBitmap = BitmapFactory.decodeFile(myUri, null);
         //scale bitmap
         mBitmap = BitmapUlti.fitScreen(mBitmap);
-        w = mBitmap.getWidth();
-        h = mBitmap.getHeight();
-
+        mImageView.getLayoutParams().height = mBitmap.getHeight();
+        mImageView.getLayoutParams().width = mBitmap.getWidth();
         mImageView.setSurfaceCreatedCallback(() -> {
 
             mImageView.setImageBitmap(mBitmap);
@@ -452,7 +527,45 @@ public class MainActivity extends BaseActivity implements FilterDemoAdapter.Item
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
 
+        //show list overlay
+        tabLayoutOverlay = findViewById(R.id.tabLayoutOverlay);
+        viewPagerOverlay = findViewById(R.id.viewPagerOverlay);
+        ViewPagerAddFragmentsAdapter adapter = new ViewPagerAddFragmentsAdapter(getSupportFragmentManager());
+        List<String> list ;
+        list = Common.getListOverlayFromAssets(this);
+        for (int i = 0; i < list.size(); i++) {
+            adapter.addFrag(new DetailPackOverlayFragment(list.get(i)));
+        }
+        viewPagerOverlay.setAdapter(adapter);
+        tabLayoutOverlay.setupWithViewPager(viewPagerOverlay);
+        tabLayoutOverlay.setSmoothScrollingEnabled(true);
+//        tabLayout.setScrollPosition(targetChannelPosition, 0f, true);
+        for (int i = 0; i < list.size(); i++) {
+            tabLayoutOverlay.getTabAt(i).setText(list.get(i));
+        }
+//        bottomSheetAddText = new BottomSheetAddText();
 
+
+
+
+    }
+
+    private void loadOverlay(String path) {
+        try {
+            // get input stream
+//            InputStream ims = getAssets().open("overley/heart/Heart 1.webp");
+            InputStream ims = getAssets().open(path);
+            // load image as Drawable
+            Drawable d = Drawable.createFromStream(ims, null);
+            // set image to ImageView
+            imageViewFrame.getLayoutParams().width = mBitmap.getWidth();
+            imageViewFrame.getLayoutParams().height = mBitmap.getHeight();
+            imageViewFrame.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            imageViewFrame.setImageDrawable(d);
+            ims.close();
+        } catch (IOException ex) {
+            Log.e("~~~", ex.getMessage());
+        }
     }
 
     private void addTextSticker(String text, String textStyle, int align, String stringColor) {
@@ -473,6 +586,64 @@ public class MainActivity extends BaseActivity implements FilterDemoAdapter.Item
         stickerView.addSticker(sticker);
 
     }
+
+    private void addTextSticker(String text, String textStyle, int align, int stringColor) {
+        TextSticker sticker = new TextSticker(this);
+
+        sticker.setText(text);
+        sticker.setTextColor(stringColor);
+        if (align == 1) {
+            sticker.setTextAlign(Layout.Alignment.ALIGN_CENTER);
+        } else if (align == 2) {
+            sticker.setTextAlign(Layout.Alignment.ALIGN_OPPOSITE);
+        } else {
+            sticker.setTextAlign(Layout.Alignment.ALIGN_NORMAL);
+        }
+        sticker.resizeText();
+        Typeface font = Typeface.createFromAsset(getAssets(), "font/" + textStyle);
+        sticker.setTypeface(font);
+        stickerView.addSticker(sticker);
+
+    }
+
+    private void addTextSticker(String text, Typeface textStyle, int align, String stringColor) {
+        TextSticker sticker = new TextSticker(this);
+
+        sticker.setText(text);
+        sticker.setTextColor(Color.parseColor(stringColor));
+        if (align == 1) {
+            sticker.setTextAlign(Layout.Alignment.ALIGN_CENTER);
+        } else if (align == 2) {
+            sticker.setTextAlign(Layout.Alignment.ALIGN_OPPOSITE);
+        } else {
+            sticker.setTextAlign(Layout.Alignment.ALIGN_NORMAL);
+        }
+        sticker.resizeText();
+        sticker.setTypeface(textStyle);
+        stickerView.addSticker(sticker);
+
+    }
+
+    private void addTextSticker(String text, Typeface textStyle, int align, int stringColor) {
+        TextSticker sticker = new TextSticker(this);
+
+        sticker.setText(text);
+        sticker.setTextColor(stringColor);
+
+        if (align == 1) {
+            sticker.setTextAlign(Layout.Alignment.ALIGN_CENTER);
+        } else if (align == 2) {
+            sticker.setTextAlign(Layout.Alignment.ALIGN_OPPOSITE);
+        } else {
+            sticker.setTextAlign(Layout.Alignment.ALIGN_NORMAL);
+        }
+        sticker.resizeText();
+        sticker.setTypeface(textStyle);
+        stickerView.addSticker(sticker);
+
+
+    }
+
 
     private List<FilterData> getListFilter() {
         List<FilterData> list = new ArrayList<>();
@@ -505,11 +676,6 @@ public class MainActivity extends BaseActivity implements FilterDemoAdapter.Item
 
         @Override
         public void loadImageOK(Bitmap bmp, Object arg) {
-
-
-            //The bitmap is which you returned at 'loadImage'.
-            //You can call recycle when this function is called, or just keep it for further usage.
-
             bmp.recycle();
         }
     };
@@ -557,9 +723,12 @@ public class MainActivity extends BaseActivity implements FilterDemoAdapter.Item
     @SuppressLint("NonConstantResourceId")
     @Override
     public void onButtonClicked(View view, Bundle bundle) {
-
         switch (view.getId()) {
             case R.id.btnCancel:
+                String type1 = bundle.getString("type", "");
+                if (type1.equals("edit")) {
+                    stickerView.addSticker(currentTextSticker);
+                }
                 bottomSheetAddText.dismiss();
                 break;
             case R.id.btnDone:
@@ -567,8 +736,18 @@ public class MainActivity extends BaseActivity implements FilterDemoAdapter.Item
                 String textStyle = bundle.getString("textStyle", getString(R.string.default_text_style));
                 String stringColor = bundle.getString("textColor", getString(R.string.default_text_color));
                 int align = bundle.getInt("align", 1);
-
-                if (!text.equals("")) {
+                String type = bundle.getString("type", "");
+                boolean isChangeFont = bundle.getBoolean("isChangeFont");
+                boolean isChangeColor = bundle.getBoolean("isChangeColor");
+                if (type.equals("edit")) {
+                    if (!isChangeColor && !isChangeFont) {
+                        addTextSticker(text, currentTextSticker.getTextPaint().getTypeface(), align, currentTextSticker.getTextPaint().getColor());
+                    } else if (!isChangeColor && isChangeFont) {
+                        addTextSticker(text, textStyle, align, currentTextSticker.getTextPaint().getColor());
+                    } else if (!isChangeFont && isChangeColor) {
+                        addTextSticker(text, currentTextSticker.getTextPaint().getTypeface(), align, stringColor);
+                    }
+                } else if (!text.equals("")) {
                     addTextSticker(text, textStyle, align, stringColor);
                 }
                 bottomSheetAddText.dismiss();
@@ -592,4 +771,11 @@ public class MainActivity extends BaseActivity implements FilterDemoAdapter.Item
         }
         return listRules;
     }
+
+    EditTextCallback editTextCallback = new EditTextCallback() {
+        @Override
+        public void edit_callback(int color, String text, Typeface typeface) {
+
+        }
+    };
 }

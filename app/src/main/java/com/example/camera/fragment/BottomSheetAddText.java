@@ -22,9 +22,10 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.camera.R;
 import com.example.camera.adapter.ListColorAdapter;
 import com.example.camera.adapter.ListTextStyleAdapter;
-import com.example.camera.R;
+import com.example.camera.callback.EditTextCallback;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
@@ -44,10 +45,17 @@ public class BottomSheetAddText extends BottomSheetDialogFragment implements Lis
     Context context;
     private String currentStyle = "regular.ttf";
     private String currentColor = "#000000";
-    private boolean isBold=false;
-    private int align;
+    private boolean isChangeFont=false, isChangeColor =false;
+    private int align, color;
 
+    String type = "create";
+    private EditTextCallback editTextCallback;
 
+//    public BottomSheetAddText(int align, int color, EditTextCallback editTextCallback) {
+//        this.align = align;
+//        this.color = color;
+//        this.editTextCallback = editTextCallback;
+//    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -75,8 +83,6 @@ public class BottomSheetAddText extends BottomSheetDialogFragment implements Lis
             BottomSheetBehavior bottomSheetBehavior = (BottomSheetBehavior) behavior;
             bottomSheetBehavior.setPeekHeight((int) (view.getMeasuredHeight() * 0.7));
 
-
-
         });
     }
 
@@ -94,6 +100,26 @@ public class BottomSheetAddText extends BottomSheetDialogFragment implements Lis
         alignCenter = v.findViewById(R.id.alignCenter);
         alignRight = v.findViewById(R.id.alignRight);
         btnBold = v.findViewById(R.id.btnBold);
+        Bundle getData = getArguments();
+        editText.setTextColor(Color.parseColor(currentColor));
+        if (getData!=null){
+            type = "edit";
+            editText.setTextColor(getData.getInt("color"));
+            editText.setText(getData.getString("text"));
+            switch (getData.getInt("align")){
+                case 0:
+                    editText.setGravity(Gravity.LEFT);
+                    break;
+                case 1:
+                    editText.setGravity(Gravity.CENTER);
+                    break;
+                case 2:
+                    editText.setGravity(Gravity.RIGHT);
+                    break;
+            }
+            align = getData.getInt("align");
+
+        }
 
 
         btnDone.setOnClickListener(v1 -> {
@@ -103,18 +129,24 @@ public class BottomSheetAddText extends BottomSheetDialogFragment implements Lis
                 bundle.putString("textStyle",currentStyle);
                 bundle.putString("textColor",currentColor);
                 bundle.putInt("align", align);
+                bundle.putBoolean("isChangeColor", isChangeColor);
+                bundle.putString("type", type);
+                bundle.putBoolean("isChangeFont",isChangeFont );
                 callback.onButtonClicked(v1, bundle);
+//                editTextCallback.edit_callback(color, editText.getText().toString());
             }
         });
         btnCancel.setOnClickListener(v1 -> {
             if (callback != null) {
                 Bundle bundle = new Bundle();
+                bundle.putString("type", type);
                 callback.onButtonClicked(v1, bundle);
             }
         });
         List<String> listFonts = getFontFromAssets(context);
         recyclerViewTextStyle = v.findViewById(R.id.recyclerView);
         adapter = new ListTextStyleAdapter(listFonts, (view, position, type) -> {
+            isChangeFont=true;
             Typeface font = Typeface.createFromAsset(context.getAssets(), "font/" + getFontFromAssets(context).get(position));
             editText.setTypeface(font);
             currentStyle = getFontFromAssets(context).get(position);
@@ -126,6 +158,7 @@ public class BottomSheetAddText extends BottomSheetDialogFragment implements Lis
         String[]  listColor = getResources().getStringArray(R.array.listColor);
         recyclerViewTextColor = v.findViewById(R.id.recyclerViewTextColor);
         adapterColor = new ListColorAdapter(listColor, (view, position, type) -> {
+            isChangeColor=true;
             currentColor = listColor[position];
             editText.setTextColor(Color.parseColor(currentColor));
         });
@@ -177,6 +210,9 @@ public class BottomSheetAddText extends BottomSheetDialogFragment implements Lis
 
     }
 
+    public void changeData (int color){
+        this.color = color;
+    }
 
     public interface Callback {
         public void onButtonClicked(View view, Bundle bundle);

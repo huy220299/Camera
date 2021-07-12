@@ -379,7 +379,13 @@ public class StickerView extends FrameLayout {
       }
       if (currentTime - lastClickTime < minClickDelayTime) {
         if (onStickerOperationListener != null) {
-          onStickerOperationListener.onStickerDoubleTapped(handlingSticker);
+          try {
+            onStickerOperationListener.onStickerDoubleTapped(handlingSticker);
+            onStickerOperationListener.onTextStickerDoubleTapped((TextSticker) handlingSticker);
+          }catch (Exception e){
+
+          }
+
         }
       }
     }
@@ -898,5 +904,8 @@ public class StickerView extends FrameLayout {
     void onStickerFlipped(@NonNull Sticker sticker);
 
     void onStickerDoubleTapped(@NonNull Sticker sticker);
+
+    void onTextStickerDoubleTapped(@NonNull TextSticker textSticker);
   }
+
 }

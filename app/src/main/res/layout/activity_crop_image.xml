@@ -18,6 +18,7 @@
             android:id="@+id/btnBack"
             android:layout_width="@dimen/_30sdp"
             android:layout_height="@dimen/_30sdp"
+            android:background="@drawable/pressed"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent">
@@ -35,6 +36,7 @@
             android:layout_width="@dimen/_30sdp"
             android:layout_height="@dimen/_30sdp"
             android:layout_margin="@dimen/_20sdp"
+            android:background="@drawable/pressed"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" >
@@ -93,7 +95,8 @@
                 android:id="@+id/ratioDefault"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1">
+                android:layout_weight="1"
+                android:background="@drawable/pressed">
 
                 <ImageView
                     android:layout_width="@dimen/_40sdp"
@@ -107,7 +110,8 @@
                 android:id="@+id/ratio11"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1">
+                android:layout_weight="1"
+                android:background="@drawable/pressed">
 
                 <ImageView
                     android:layout_width="@dimen/_30sdp"
@@ -121,7 +125,8 @@
                 android:id="@+id/ratio43"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1">
+                android:layout_weight="1"
+                android:background="@drawable/pressed">
 
                 <ImageView
                     android:layout_width="@dimen/_30sdp"
@@ -135,7 +140,8 @@
                 android:id="@+id/ratio169"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1">
+                android:layout_weight="1"
+                android:background="@drawable/pressed">
 
                 <ImageView
                     android:layout_width="@dimen/_30sdp"
@@ -160,7 +166,8 @@
                 android:id="@+id/shapeRectangle"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1">
+                android:layout_weight="1"
+                android:background="@drawable/pressed">
 
                 <ImageView
                     android:layout_width="@dimen/_40sdp"
@@ -174,7 +181,8 @@
                 android:id="@+id/shapeOval"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1">
+                android:layout_weight="1"
+                android:background="@drawable/pressed">
 
                 <ImageView
                     android:layout_width="@dimen/_40sdp"
@@ -188,7 +196,8 @@
                 android:id="@+id/showGrid"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1">
+                android:layout_weight="1"
+                android:background="@drawable/pressed">
 
                 <ImageView
                     android:layout_width="@dimen/_30sdp"
@@ -202,7 +211,8 @@
                 android:id="@+id/btnRotate"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1">
+                android:layout_weight="1"
+                android:background="@drawable/pressed">
 
                 <ImageView
 

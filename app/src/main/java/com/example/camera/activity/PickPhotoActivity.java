@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.camera.R;
 import com.example.camera.adapter.FolderAdapter;
-import com.example.camera.model.Butket;
+import com.example.camera.model.Bucket;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -48,8 +48,8 @@ public class PickPhotoActivity extends AppCompatActivity  {
 
 
     }
-    public  List<Butket> getImageBuckets(Context mContext){
-        List<Butket>  buckets = new ArrayList<>();
+    public  List<Bucket> getImageBuckets(Context mContext){
+        List<Bucket>  buckets = new ArrayList<>();
         Uri uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
         String [] projection = {MediaStore.Images.Media.BUCKET_DISPLAY_NAME, MediaStore.Images.Media.DATA};
 
@@ -62,7 +62,7 @@ public class PickPhotoActivity extends AppCompatActivity  {
                 String firstImage = cursor.getString(cursor.getColumnIndex(projection[1]));
                 file = new File(firstImage);
                 if (file.exists() && !listPath.contains(bucketPath)) {
-                    buckets.add(new Butket(bucketPath, firstImage));
+                    buckets.add(new Bucket(bucketPath, firstImage));
                     listPath.add(bucketPath);
                 }
             }

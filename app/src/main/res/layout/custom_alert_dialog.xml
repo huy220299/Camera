@@ -4,13 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:elevation="@dimen/_10sdp"
-    app:cardCornerRadius="10dp"
+    android:background="@color/transparent"
+    app:cardCornerRadius="30dp"
     >
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/background_dialog"
         >
 
         <TextView
@@ -18,30 +18,55 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_margin="10dp"
-            android:text="Do you want to exit ?"
+            android:paddingBottom="15dp"
+            android:layout_marginTop="15dp"
+            android:text="Would you like to cancel \n your editing ?"
+            android:gravity="center"
+            android:lines="2"
             android:textColor="@android:color/black"
-            android:textSize="@dimen/_16ssp"
-            android:textStyle="bold"
+            android:textSize="@dimen/_14ssp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#C8C5C7"
+
+            app:layout_constraintTop_toBottomOf="@+id/txt_dia" />
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="0dp"
+            android:background="#C8C5C7"
+
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txt_dia"
+            />
+
         <LinearLayout
+
+            android:id="@+id/linearLayout5"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
             android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:orientation="horizontal"
+            android:padding="5dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/txt_dia">
+
             <RelativeLayout
                 android:id="@+id/btn_no"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="No"
-
                 android:textColor="@color/black"
                 android:textStyle="bold">
 
@@ -51,10 +76,10 @@
                     android:layout_centerInParent="true"
                     android:lines="1"
                     android:text="Cancel"
-                    android:textSize="@dimen/_16ssp"
-                    android:textColor="@color/black"
-                    android:textStyle="bold" />
+                    android:textColor="#03A9F4"
+                    android:textSize="@dimen/_14ssp" />
             </RelativeLayout>
+
             <RelativeLayout
                 android:id="@+id/btn_yes"
                 android:layout_width="0dp"
@@ -67,9 +92,8 @@
                     android:layout_centerInParent="true"
                     android:lines="1"
                     android:text="Yes"
-                    android:textSize="@dimen/_16ssp"
-                    android:textColor="@color/red"
-                    android:textStyle="bold" />
+                    android:textColor="#FF9800"
+                    android:textSize="@dimen/_14ssp" />
             </RelativeLayout>
 
 

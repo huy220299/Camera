@@ -85,6 +85,10 @@ public class TextSticker extends Sticker {
     textPaint.setTextSize(maxTextSizePixels);
   }
 
+  public TextPaint getTextPaint() {
+    return textPaint;
+  }
+
   @Override public void draw(@NonNull Canvas canvas) {
     Matrix matrix = getMatrix();
     canvas.save();
@@ -125,6 +129,7 @@ public class TextSticker extends Sticker {
     }
   }
 
+
   @NonNull @Override public TextSticker setAlpha(@IntRange(from = 0, to = 255) int alpha) {
     textPaint.setAlpha(alpha);
     return this;
@@ -156,6 +161,8 @@ public class TextSticker extends Sticker {
     textPaint.setTypeface(typeface);
     return this;
   }
+
+
 
   @NonNull public TextSticker setTextColor(@ColorInt int color) {
     textPaint.setColor(color);

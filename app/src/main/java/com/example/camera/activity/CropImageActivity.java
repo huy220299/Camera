@@ -4,20 +4,16 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
-import android.graphics.RectF;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Base64;
 import android.view.View;
 import android.widget.RelativeLayout;
 
 import com.example.camera.R;
+import com.example.camera.fragment.CustomDialogClass;
 import com.example.camera.ultis.BitmapUlti;
 import com.example.camera.ultis.FileUtil;
-import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.io.IOException;
@@ -131,5 +127,10 @@ public class CropImageActivity extends BaseActivity implements View.OnClickListe
         }
     }
 
-
+    @Override
+    public void onBackPressed() {
+        CustomDialogClass cdd=new CustomDialogClass(CropImageActivity.this);
+        cdd.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        cdd.show();
+    }
 }

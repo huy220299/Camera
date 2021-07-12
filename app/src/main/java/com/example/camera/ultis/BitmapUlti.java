@@ -11,7 +11,6 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.util.Log;
 import android.view.View;
 
 import java.io.ByteArrayOutputStream;
@@ -53,7 +52,6 @@ public class BitmapUlti {
         } else {                     //scale bitmap by width
             mBitmap = BitmapUlti.getResizedBitmap(mBitmap, Common.getScreenWidth(), newHeight);
         }
-        Log.e("~~~", "weight: "+mBitmap.getWidth()+"height: "+mBitmap.getHeight());
         return mBitmap;
     }
 

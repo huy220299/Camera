@@ -47,6 +47,17 @@ public class Common {
         }
         return list;
     }
+    public static List<String> getListOverlayFromAssets(Context context) {
+        List<String> list = new ArrayList<>();
+        AssetManager assetManager;
+        try {
+            assetManager = context.getAssets();
+            list = Arrays.asList(assetManager.list("overley"));
+        } catch (IOException e) {
+
+        }
+        return list;
+    }
     public static List<String> getNameStickerFromPack(Context context, String namePack) {
         List<String> list = new ArrayList<>();
         AssetManager assetManager;

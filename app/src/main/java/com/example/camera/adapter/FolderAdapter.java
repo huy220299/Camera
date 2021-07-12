@@ -2,7 +2,6 @@ package com.example.camera.adapter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.camera.R;
 import com.example.camera.activity.MainActivity;
-import com.example.camera.model.Butket;
+import com.example.camera.model.Bucket;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -24,11 +23,11 @@ import java.util.List;
 
 public class FolderAdapter extends RecyclerView.Adapter<FolderAdapter.ViewHolder>{
     Context context;
-    List<Butket> list;
+    List<Bucket> list;
 
 
 
-    public FolderAdapter(List<Butket> list ){
+    public FolderAdapter(List<Bucket> list ){
         this.list = list;
 
     }
@@ -113,7 +112,6 @@ public class FolderAdapter extends RecyclerView.Adapter<FolderAdapter.ViewHolder
                 Intent intent = new Intent(context, MainActivity.class);
                 intent.putExtra("imageUri", listUri.get(position));
                 context.startActivity(intent);
-                Log.e("~~~",listUri.get(position));
             });
 //            holder.itemView.setLayoutParams(new ViewGroup.LayoutParams(300,300));
         }
@@ -133,7 +131,7 @@ public class FolderAdapter extends RecyclerView.Adapter<FolderAdapter.ViewHolder
             }
         }
     }
-    public List<String> loadUriFromPath(Butket folder){
+    public List<String> loadUriFromPath(Bucket folder){
         String pathFolder= folder.getFirstImageContainedPath().substring(0,folder.getFirstImageContainedPath().lastIndexOf("/"));
         File file = new File(pathFolder);
         File[] listFile;
