@@ -4,6 +4,11 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.RectF;
 import android.os.Bundle;
 import android.util.Base64;
 import android.view.View;
@@ -72,7 +77,7 @@ public class CropImageActivity extends BaseActivity implements View.OnClickListe
     @Override
     public void onClick(View v) {
         Bitmap bm = imageView.getCroppedImage();
-        CropImage.toOvalBitmap(bm);
+        bm = BitmapUlti.createOvalBitmap(bm);
 
         switch (v.getId()){
             case R.id.ratioDefault:
@@ -125,5 +130,6 @@ public class CropImageActivity extends BaseActivity implements View.OnClickListe
 
         }
     }
+
 
 }

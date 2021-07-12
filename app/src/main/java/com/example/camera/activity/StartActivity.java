@@ -35,8 +35,7 @@ public class StartActivity extends BaseActivity {
         btnPhoto = findViewById(R.id.btnPhoto);
         background1 = findViewById(R.id.background1);
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.img_banner);
-
-        background1.setImageBitmap(BitmapUlti.rotateBitmap(bitmap,15));
+        background1.setImageBitmap(bitmap);
 
 
         btnPhoto.setOnClickListener(v -> {

@@ -10,9 +10,9 @@
         android:id="@+id/imageView6"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:alpha=".3"
+        android:alpha=".2"
         android:scaleType="centerCrop"
-        android:src="@drawable/chocolate" />
+        android:src="@drawable/img_under" />
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="match_parent"

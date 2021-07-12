@@ -51,7 +51,7 @@ public class FolderAdapter extends RecyclerView.Adapter<FolderAdapter.ViewHolder
             holder.recyclerView.setVisibility(View.VISIBLE);
             list.get(position).setOpened(true);
         }
-        holder.btnHide.setOnClickListener(v -> {
+        holder.itemView.setOnClickListener(v -> {
             if (list.get(position).isOpened()){
                 holder.btnHide.setImageResource(R.drawable.down);
                 holder.recyclerView.setVisibility(View.GONE);

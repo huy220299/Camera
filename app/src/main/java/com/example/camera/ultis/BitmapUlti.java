@@ -6,6 +6,9 @@ import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.Log;
@@ -14,6 +17,29 @@ import android.view.View;
 import java.io.ByteArrayOutputStream;
 
 public class BitmapUlti {
+    public static Bitmap createOvalBitmap(Bitmap bitmap){
+        int width = bitmap.getWidth();
+        int height = bitmap.getHeight();
+        Bitmap output = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+
+        Canvas canvas = new Canvas(output);
+
+        int color = 0xff424242;
+        Paint paint = new Paint();
+
+        paint.setAntiAlias(true);
+        canvas.drawARGB(0, 0, 0, 0);
+        paint.setColor(color);
+
+        RectF rect = new RectF(0, 0, width, height);
+        canvas.drawOval(rect, paint);
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+        canvas.drawBitmap(bitmap, 0, 0, paint);
+
+        bitmap.recycle();
+
+        return output;
+    }
     public static Bitmap fitScreen(Bitmap mBitmap) {
 
         double paramHeight = 0.73;

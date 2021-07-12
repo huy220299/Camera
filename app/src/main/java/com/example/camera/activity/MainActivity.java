@@ -2,6 +2,9 @@ package com.example.camera.activity;
 
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.AssetManager;
@@ -34,6 +37,7 @@ import com.example.camera.R;
 import com.example.camera.adapter.FilterDemoAdapter;
 import com.example.camera.fragment.BottomSheetAddSticker;
 import com.example.camera.fragment.BottomSheetAddText;
+import com.example.camera.fragment.CustomDialogClass;
 import com.example.camera.fragment.DetailPackStickerFragment;
 import com.example.camera.model.FilterData;
 import com.example.camera.ultis.BitmapUlti;
@@ -57,9 +61,8 @@ import java.util.Arrays;
 import java.util.List;
 
 
-
 public class MainActivity extends BaseActivity implements FilterDemoAdapter.ItemClickListener, BottomSheetAddText.Callback, DetailPackStickerFragment.CallbackSticker {
-    public  static String TAG = "MainActivity";
+    public static String TAG = "MainActivity";
 
     private String mCurrentConfig;
     protected static final String BASIC_FILTER_CONFIG = "@adjust brightness 0 @adjust contrast 1 @adjust saturation 1 @adjust sharpen 0";
@@ -69,21 +72,21 @@ public class MainActivity extends BaseActivity implements FilterDemoAdapter.Item
     List<FilterData> filterDataList;
     Bitmap mBitmap, bitmapFiltered;
     private SeekBar seekBarFilter, seekBarBrightness, seekBarContrast, seekBarSaturation;
-    private int currentBright=50, currentContrast=10, currentSaturation=0;
+    private int currentBright = 50, currentContrast = 10, currentSaturation = 0;
     private TextView tvBrightness, tvContrast, tvSaturation;
     private RelativeLayout btnSave, btnBack, btnMultiChange;
     private ImageView photoView;
     private LinearLayout linearLayoutMultiChange;
 
-    private RelativeLayout btnAddText, btnAddSticker, btnCrop,btnAddFilter, btnAddDate;
+    private RelativeLayout btnAddText, btnAddSticker, btnCrop, btnAddFilter, btnAddDate;
 
-    private boolean isVisibility = true;
+    private boolean isVisibility = true, isDone;
     private int currentFont;
     private Bitmap bm, y;
     private Drawable addedSticker;
     private StickerView stickerView;
     private ZoomLayout zoomLayout;
-    private int w,h;
+    private int w, h;
 
     BottomSheetAddText bottomSheetAddText;
     BottomSheetAddSticker bottomSheetAddSticker;
@@ -106,7 +109,8 @@ public class MainActivity extends BaseActivity implements FilterDemoAdapter.Item
         v.draw(c);
         return b;
     }
-    private void seekBarChange(){
+
+    private void seekBarChange() {
 
         seekBarFilter.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -130,9 +134,9 @@ public class MainActivity extends BaseActivity implements FilterDemoAdapter.Item
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 tvBrightness.setText(String.valueOf(progress));
 
-                Bitmap bitmap = BitmapUlti.adjustedContrast(bitmapFiltered,currentContrast);
-                bitmap = BitmapUlti.adjustSaturation(bitmap,currentSaturation);
-                bitmap = BitmapUlti.adjustBrightness(bitmap,progress);
+                Bitmap bitmap = BitmapUlti.adjustedContrast(bitmapFiltered, currentContrast);
+                bitmap = BitmapUlti.adjustSaturation(bitmap, currentSaturation);
+                bitmap = BitmapUlti.adjustBrightness(bitmap, progress);
                 mImageView.setImageBitmap(bitmap);
 
                 currentBright = progress;
@@ -154,13 +158,13 @@ public class MainActivity extends BaseActivity implements FilterDemoAdapter.Item
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 tvContrast.setText(String.valueOf(progress));
 
-                Bitmap bitmap = BitmapUlti.adjustBrightness(bitmapFiltered,currentBright);
-                bitmap = BitmapUlti.adjustSaturation(bitmap,currentSaturation);
-                bitmap = BitmapUlti.adjustedContrast(bitmap,progress);
-                Log.e("~~~",progress+"_______"+ currentContrast+"_______"+currentSaturation);
+                Bitmap bitmap = BitmapUlti.adjustBrightness(bitmapFiltered, currentBright);
+                bitmap = BitmapUlti.adjustSaturation(bitmap, currentSaturation);
+                bitmap = BitmapUlti.adjustedContrast(bitmap, progress);
+                Log.e("~~~", progress + "_______" + currentContrast + "_______" + currentSaturation);
                 mImageView.setImageBitmap(bitmap);
 
-                currentContrast =progress;
+                currentContrast = progress;
             }
 
             @Override
@@ -178,12 +182,12 @@ public class MainActivity extends BaseActivity implements FilterDemoAdapter.Item
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 tvSaturation.setText(String.valueOf(progress));
 
-                Bitmap bitmap = BitmapUlti.adjustedContrast(bitmapFiltered,currentContrast);
-                bitmap = BitmapUlti.adjustBrightness(bitmap,currentBright);
-                bitmap = BitmapUlti.adjustSaturation(bitmap,progress);
+                Bitmap bitmap = BitmapUlti.adjustedContrast(bitmapFiltered, currentContrast);
+                bitmap = BitmapUlti.adjustBrightness(bitmap, currentBright);
+                bitmap = BitmapUlti.adjustSaturation(bitmap, progress);
                 mImageView.setImageBitmap(bitmap);
 
-                currentSaturation =progress;
+                currentSaturation = progress;
             }
 
             @Override
@@ -203,8 +207,7 @@ public class MainActivity extends BaseActivity implements FilterDemoAdapter.Item
         seekBarChange();
         btnAddDate.setOnClickListener(v -> {
 
-                }
-        );
+                });
 
         btnMultiChange.setOnClickListener(v ->
         {
@@ -216,8 +219,8 @@ public class MainActivity extends BaseActivity implements FilterDemoAdapter.Item
                 seekBarFilter.setVisibility(View.GONE);
                 recyclerView.setVisibility(View.GONE);
                 linearLayoutMultiChange.setVisibility(View.VISIBLE);
-            }else {
-                isVisibility=true;
+            } else {
+                isVisibility = true;
                 seekBarFilter.setVisibility(View.VISIBLE);
                 recyclerView.setVisibility(View.VISIBLE);
                 linearLayoutMultiChange.setVisibility(View.GONE);
@@ -225,20 +228,23 @@ public class MainActivity extends BaseActivity implements FilterDemoAdapter.Item
 
         });
         btnAddFilter.setOnClickListener(v -> {
-            if (!isVisibility){
+            if (!isVisibility) {
                 recyclerView.setVisibility(View.VISIBLE);
                 linearLayoutMultiChange.setVisibility(View.GONE);
                 isVisibility = true;
             }
         });
         btnCrop.setOnClickListener(v -> {
-
+            isDone = false;
             new getBitmap().execute();
-
         });
-        btnSave.setOnClickListener(v -> new getBitmap().execute());
+        btnSave.setOnClickListener(v ->
+        {
+            isDone = true;
+            new getBitmap().execute();
+        });
         btnBack.setOnClickListener(v -> {
-            startActivity(getIntent());
+           onBackPressed();
         });
 
         btnAddText.setOnClickListener(v -> {
@@ -247,7 +253,6 @@ public class MainActivity extends BaseActivity implements FilterDemoAdapter.Item
             bottomSheetAddText.show(getSupportFragmentManager(), "ModalBottomSheet");
             bottomSheetAddText.setArguments(bundle);
         });
-
 
 
         btnAddSticker.setOnClickListener(v -> {
@@ -261,6 +266,7 @@ public class MainActivity extends BaseActivity implements FilterDemoAdapter.Item
 
 
     }
+
     @Override
     public void onPause() {
         super.onPause();
@@ -274,15 +280,37 @@ public class MainActivity extends BaseActivity implements FilterDemoAdapter.Item
         mImageView.onResume();
     }
 
+    @Override
+    public void onBackPressed() {
+//        showDialog(this);
+        CustomDialogClass cdd=new CustomDialogClass(MainActivity.this);
+        cdd.show();
+    }
+
+    private void showDialog(Context context) {
+        new AlertDialog.Builder(context)
+                .setMessage("Are you sure you want to back?")
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        finish();
+                        startActivity(new Intent(context,StartActivity.class));
+                    }
+                })
+
+                // A null listener allows the button to dismiss the dialog and take no further action.
+                .setNegativeButton("Cancel", null)
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .show();
+    }
 
 
     @Override
     public void onStickerClicked(Bundle bundle) {
-        String nameSticker = bundle.getString("nameSticker","");
-        String namePack = bundle.getString("namePack","");
+        String nameSticker = bundle.getString("nameSticker", "");
+        String namePack = bundle.getString("namePack", "");
         try {
-             addedSticker = Common.getStickerInAssets(this,nameSticker,namePack);
-             stickerView.addSticker(new DrawableSticker(addedSticker));
+            addedSticker = Common.getStickerInAssets(this, nameSticker, namePack);
+            stickerView.addSticker(new DrawableSticker(addedSticker));
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -291,16 +319,16 @@ public class MainActivity extends BaseActivity implements FilterDemoAdapter.Item
     }
 
 
-    class getBitmap extends AsyncTask<Void, Void, Void>{
+    class getBitmap extends AsyncTask<Void, Void, Void> {
         @SuppressLint("WrongThread")
         @Override
         protected Void doInBackground(Void... voids) {
             Bitmap bmFi = mImageView.getBitmapData();
             Bitmap fBitmap = stickerView.getBitmap();
-            Bitmap bmAll = Bitmap.createBitmap(bmFi.getWidth(),bmFi.getHeight(), Bitmap.Config.ARGB_8888);
+            Bitmap bmAll = Bitmap.createBitmap(bmFi.getWidth(), bmFi.getHeight(), Bitmap.Config.ARGB_8888);
             Canvas c = new Canvas(bmAll);
-            c.drawBitmap(bmFi,0,0,null);
-            c.drawBitmap(fBitmap,0,0,null);
+            c.drawBitmap(bmFi, 0, 0, null);
+            c.drawBitmap(fBitmap, 0, 0, null);
             bm = bmAll;
             return null;
         }
@@ -310,15 +338,19 @@ public class MainActivity extends BaseActivity implements FilterDemoAdapter.Item
 
             Handler handler = new Handler(Looper.getMainLooper());
             handler.postAtTime(() -> {
-                Intent intent = new Intent(MainActivity.this, CropImageActivity.class);
-                String encoded = Base64.encodeToString(BitmapUlti.convertToArray(bm), Base64.DEFAULT);
-                SharedPreferences preferences = getSharedPreferences("test",MODE_PRIVATE);
-                SharedPreferences.Editor editor = preferences.edit();
-                editor.putString("Image",encoded);
-                editor.apply();
 
-                startActivity(intent);
-            },500);
+                String encoded = Base64.encodeToString(BitmapUlti.convertToArray(bm), Base64.DEFAULT);
+                SharedPreferences preferences = getSharedPreferences("test", MODE_PRIVATE);
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.putString("Image", encoded);
+                editor.apply();
+                if (isDone) {
+                    startActivity(new Intent(MainActivity.this, SaveActivity.class));
+                } else {
+                    startActivity(new Intent(MainActivity.this, CropImageActivity.class));
+                }
+
+            }, 500);
 
         }
     }
@@ -326,18 +358,18 @@ public class MainActivity extends BaseActivity implements FilterDemoAdapter.Item
     private void initView() {
         zoomLayout = findViewById(R.id.zoomLayout);
         photoView = findViewById(R.id.photoView);
-        btnAddText= findViewById(R.id.btnAddText);
-        btnAddFilter= findViewById(R.id.btnAddFilter);
-        btnAddDate= findViewById(R.id.btnAddDate);
-        btnSave= findViewById(R.id.btnSave);
-        btnBack= findViewById(R.id.btnBack);
-        btnMultiChange= findViewById(R.id.btnMultiChange);
-        linearLayoutMultiChange= findViewById(R.id.linearLayoutMultiChange);
-        stickerView= findViewById(R.id.stickerView);
+        btnAddText = findViewById(R.id.btnAddText);
+        btnAddFilter = findViewById(R.id.btnAddFilter);
+        btnAddDate = findViewById(R.id.btnAddDate);
+        btnSave = findViewById(R.id.btnSave);
+        btnBack = findViewById(R.id.btnBack);
+        btnMultiChange = findViewById(R.id.btnMultiChange);
+        linearLayoutMultiChange = findViewById(R.id.linearLayoutMultiChange);
+        stickerView = findViewById(R.id.stickerView);
         mImageView = findViewById(R.id.image);
 
-        btnAddSticker =  findViewById(R.id.btnAddSticker);
-        btnCrop =  findViewById(R.id.btnCrop);
+        btnAddSticker = findViewById(R.id.btnAddSticker);
+        btnCrop = findViewById(R.id.btnCrop);
         seekBarFilter = findViewById(R.id.globalRestoreSeekBar);
         seekBarBrightness = findViewById(R.id.seekBarBrightness);
         seekBarContrast = findViewById(R.id.seekBarContrast);
@@ -364,8 +396,8 @@ public class MainActivity extends BaseActivity implements FilterDemoAdapter.Item
         mBitmap = BitmapFactory.decodeFile(myUri, null);
         //scale bitmap
         mBitmap = BitmapUlti.fitScreen(mBitmap);
-         w= mBitmap.getWidth();
-         h= mBitmap.getHeight();
+        w = mBitmap.getWidth();
+        h = mBitmap.getHeight();
 
         mImageView.setSurfaceCreatedCallback(() -> {
 
@@ -374,7 +406,7 @@ public class MainActivity extends BaseActivity implements FilterDemoAdapter.Item
             mImageView.setFilterIntensity(1.0f);
             CGENativeLibrary.setLoadImageCallback(mLoadImageCallback, null);
         });
-       // mImageView.setDisplayMode(ImageGLSurfaceView.DisplayMode.DISPLAY_ASPECT_FIT);
+        // mImageView.setDisplayMode(ImageGLSurfaceView.DisplayMode.DISPLAY_ASPECT_FIT);
 
 
         //set up sticker view
@@ -396,14 +428,12 @@ public class MainActivity extends BaseActivity implements FilterDemoAdapter.Item
         flipIcon.setIconEvent(new FlipHorizontallyEvent());
 
 
-
-
         stickerView.setIcons(Arrays.asList(deleteIcon, zoomIcon, flipIcon));
 //        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(mBitmap.getWidth(), mBitmap.getHeight());
 //        stickerView.setLayoutParams(layoutParams);
 
-        stickerView.getLayoutParams().width= mBitmap.getWidth();
-        stickerView.getLayoutParams().height= mBitmap.getHeight();
+        stickerView.getLayoutParams().width = mBitmap.getWidth();
+        stickerView.getLayoutParams().height = mBitmap.getHeight();
 
 
         //default icon layout
@@ -418,26 +448,27 @@ public class MainActivity extends BaseActivity implements FilterDemoAdapter.Item
         recyclerView.setVisibility(View.VISIBLE);
         filterDataList = new ArrayList<>();
         filterDataList = getListFilter();
-        adapter= new FilterDemoAdapter(filterDataList, this, mBitmap);
+        adapter = new FilterDemoAdapter(filterDataList, this, mBitmap);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
 
 
     }
-    private void addTextSticker(String text, String textStyle,int align, String stringColor) {
+
+    private void addTextSticker(String text, String textStyle, int align, String stringColor) {
         TextSticker sticker = new TextSticker(this);
 
         sticker.setText(text);
         sticker.setTextColor(Color.parseColor(stringColor));
-        if (align==1){
+        if (align == 1) {
             sticker.setTextAlign(Layout.Alignment.ALIGN_CENTER);
-        }else if (align==2){
+        } else if (align == 2) {
             sticker.setTextAlign(Layout.Alignment.ALIGN_OPPOSITE);
-        }else {
+        } else {
             sticker.setTextAlign(Layout.Alignment.ALIGN_NORMAL);
         }
         sticker.resizeText();
-        Typeface font = Typeface.createFromAsset(getAssets(),"font/"+ textStyle);
+        Typeface font = Typeface.createFromAsset(getAssets(), "font/" + textStyle);
         sticker.setTypeface(font);
         stickerView.addSticker(sticker);
 
@@ -498,11 +529,11 @@ public class MainActivity extends BaseActivity implements FilterDemoAdapter.Item
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode== 123){
-            if (resultCode==RESULT_OK){
+        if (requestCode == 123) {
+            if (resultCode == RESULT_OK) {
                 byte[] bytes = data.getByteArrayExtra("resultBitmap");
                 Bitmap resultBitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-               mImageView.setImageBitmap(resultBitmap);
+                mImageView.setImageBitmap(resultBitmap);
             }
         }
     }
@@ -527,22 +558,22 @@ public class MainActivity extends BaseActivity implements FilterDemoAdapter.Item
     @Override
     public void onButtonClicked(View view, Bundle bundle) {
 
-       switch (view.getId()){
-           case R.id.btnCancel:
-               bottomSheetAddText.dismiss();
-               break;
-           case R.id.btnDone:
-               String text = bundle.getString("text","");
-               String textStyle = bundle.getString("textStyle",getString(R.string.default_text_style));
-               String stringColor = bundle.getString("textColor",getString(R.string.default_text_color));
-               int align = bundle.getInt("align",1);
+        switch (view.getId()) {
+            case R.id.btnCancel:
+                bottomSheetAddText.dismiss();
+                break;
+            case R.id.btnDone:
+                String text = bundle.getString("text", "");
+                String textStyle = bundle.getString("textStyle", getString(R.string.default_text_style));
+                String stringColor = bundle.getString("textColor", getString(R.string.default_text_color));
+                int align = bundle.getInt("align", 1);
 
-               if (!text.equals("")) {
-                   addTextSticker(text, textStyle, align, stringColor);
-               }
-               bottomSheetAddText.dismiss();
+                if (!text.equals("")) {
+                    addTextSticker(text, textStyle, align, stringColor);
+                }
+                bottomSheetAddText.dismiss();
 
-       }
+        }
 
     }
 

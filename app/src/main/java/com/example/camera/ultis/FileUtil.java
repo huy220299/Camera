@@ -88,7 +88,7 @@ public class FileUtil {
       context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(image)));
 
     }
-    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+    bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
     Objects.requireNonNull(fos).close();
   }
 }

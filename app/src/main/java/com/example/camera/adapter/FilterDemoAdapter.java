@@ -47,6 +47,7 @@ public class FilterDemoAdapter extends RecyclerView.Adapter<FilterDemoAdapter.Vi
     public void onBindViewHolder(ViewHolder holder, int position) {
 
         holder.itemView.getLayoutParams().width = Common.getScreenWidth() /5;
+        holder.itemView.getLayoutParams().height = Common.getScreenWidth() /5;
 
        FilterData currentItem = listFilter.get(position);
 
