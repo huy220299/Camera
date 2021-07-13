@@ -1,5 +1,6 @@
 package com.example.camera.fragment;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.graphics.drawable.Drawable;
@@ -12,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.camera.R;
@@ -29,7 +31,7 @@ public class DetailPackOverlayFragment extends Fragment {
     private Drawable[] listOverlay;
     private List<String> listStringOverlay;
     String currentOverlay;
-    private CallbackSticker callback;
+    private CallbackOverlay callback;
 
 
     public DetailPackOverlayFragment(String namePack){
@@ -41,22 +43,22 @@ public class DetailPackOverlayFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         ViewGroup viewGroup = (ViewGroup) inflater.inflate(R.layout.fragment_detail_pack, container, false);
-        listStringOverlay = Common.getNameStickerFromPack(getContext(),namePack);
+        listStringOverlay = Common.getNameOverlayFromPack(getContext(),namePack);
         recyclerView = viewGroup.findViewById(R.id.recyclerView);
-        listOverlay =getDrawableFromAssets(getContext(),"overlay", namePack);
+        listOverlay =getDrawableFromAssets(getContext(), "overlay", namePack);
         adapter =new StickerAdapter(listOverlay,5, (view, position) ->
         {
             if (callback != null) {
                 Bundle bundle = new Bundle();
                 currentOverlay = listStringOverlay.get(position);
-                bundle.putString("nameSticker", currentOverlay);
+                bundle.putString("nameOverlay", currentOverlay);
                 bundle.putString("namePack",namePack);
-                callback.onStickerClicked(bundle);
+                callback.onOverlayClicked(bundle);
             }
         }
         );
         recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new GridLayoutManager(getContext(),3));
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.HORIZONTAL,false));
         recyclerView.requestFocus();
         return viewGroup;
     }
@@ -81,18 +83,18 @@ public class DetailPackOverlayFragment extends Fragment {
         }
         return null;
     }
-    public interface CallbackSticker {
-        public void onStickerClicked(Bundle bundle);
+    public interface CallbackOverlay {
+        public void onOverlayClicked(Bundle bundle);
     }
-//    @Override
-//    public void onAttach(Activity ac) {
-//        super.onAttach(ac);
-//        callback = (CallbackSticker) ac;
-//    }
-//
-//    @Override
-//    public void onDetach() {
-//        callback = null;
-//        super.onDetach();
-//    }
+    @Override
+    public void onAttach(Activity ac) {
+        super.onAttach(ac);
+        callback = (CallbackOverlay) ac;
+    }
+
+    @Override
+    public void onDetach() {
+        callback = null;
+        super.onDetach();
+    }
 }

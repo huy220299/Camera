@@ -67,7 +67,7 @@ import java.util.Arrays;
 import java.util.List;
 
 
-public class MainActivity extends BaseActivity implements FilterDemoAdapter.ItemClickListener, BottomSheetAddText.Callback, DetailPackStickerFragment.CallbackSticker {
+public class MainActivity extends BaseActivity implements FilterDemoAdapter.ItemClickListener, BottomSheetAddText.Callback, DetailPackStickerFragment.CallbackSticker, DetailPackOverlayFragment.CallbackOverlay {
     public static String TAG = "MainActivity";
 
     private String mCurrentConfig;
@@ -110,14 +110,6 @@ public class MainActivity extends BaseActivity implements FilterDemoAdapter.Item
 
     }
 
-
-    public static Bitmap loadBitmapFromView(View v) {
-        Bitmap b = Bitmap.createBitmap(v.getWidth(), v.getHeight(), Bitmap.Config.ARGB_8888);
-        Canvas c = new Canvas(b);
-//        v.layout(v.getLeft(), v.getTop(), v.getRight(), v.getBottom());
-        v.draw(c);
-        return b;
-    }
 
     private void seekBarChange() {
 
@@ -213,6 +205,7 @@ public class MainActivity extends BaseActivity implements FilterDemoAdapter.Item
     }
 
     private void onActionEvent() {
+
         seekBarChange();
         btnAddDate.setOnClickListener(v -> {
 
@@ -230,11 +223,13 @@ public class MainActivity extends BaseActivity implements FilterDemoAdapter.Item
                 mImageView.setFilterWithConfig(BASIC_FILTER_CONFIG);
                 seekBarFilter.setVisibility(View.GONE);
                 recyclerView.setVisibility(View.GONE);
+                linearLayoutOverlay.setVisibility(View.GONE);
                 linearLayoutMultiChange.setVisibility(View.VISIBLE);
             } else {
                 isVisibility = true;
                 seekBarFilter.setVisibility(View.VISIBLE);
                 recyclerView.setVisibility(View.VISIBLE);
+                linearLayoutOverlay.setVisibility(View.VISIBLE);
                 linearLayoutMultiChange.setVisibility(View.GONE);
             }
 
@@ -243,6 +238,7 @@ public class MainActivity extends BaseActivity implements FilterDemoAdapter.Item
             if (!isVisibility) {
                 recyclerView.setVisibility(View.VISIBLE);
                 linearLayoutMultiChange.setVisibility(View.GONE);
+                linearLayoutOverlay.setVisibility(View.GONE);
                 isVisibility = true;
             }
         });
@@ -383,13 +379,29 @@ public class MainActivity extends BaseActivity implements FilterDemoAdapter.Item
         String nameSticker = bundle.getString("nameSticker", "");
         String namePack = bundle.getString("namePack", "");
         try {
-            addedSticker = Common.getStickerInAssets(this, nameSticker, namePack);
+            addedSticker = Common.getDrawableInAssets(this, "sticker", namePack,nameSticker);
             stickerView.addSticker(new DrawableSticker(addedSticker));
 
         } catch (IOException e) {
             e.printStackTrace();
         }
         bottomSheetAddSticker.dismiss();
+    }
+
+    @Override
+    public void onOverlayClicked(Bundle bundle) {
+        String nameOverlay = bundle.getString("nameOverlay", "");
+        String namePack = bundle.getString("namePack", "");
+        try {
+            Drawable addedOverlay = Common.getDrawableInAssets(this,"overlay",namePack,nameOverlay);
+            imageViewFrame.getLayoutParams().width = mBitmap.getWidth();
+            imageViewFrame.getLayoutParams().height = mBitmap.getHeight();
+            imageViewFrame.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            imageViewFrame.setImageDrawable(addedOverlay);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
 
@@ -543,29 +555,11 @@ public class MainActivity extends BaseActivity implements FilterDemoAdapter.Item
         for (int i = 0; i < list.size(); i++) {
             tabLayoutOverlay.getTabAt(i).setText(list.get(i));
         }
-//        bottomSheetAddText = new BottomSheetAddText();
 
 
 
 
-    }
 
-    private void loadOverlay(String path) {
-        try {
-            // get input stream
-//            InputStream ims = getAssets().open("overley/heart/Heart 1.webp");
-            InputStream ims = getAssets().open(path);
-            // load image as Drawable
-            Drawable d = Drawable.createFromStream(ims, null);
-            // set image to ImageView
-            imageViewFrame.getLayoutParams().width = mBitmap.getWidth();
-            imageViewFrame.getLayoutParams().height = mBitmap.getHeight();
-            imageViewFrame.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            imageViewFrame.setImageDrawable(d);
-            ims.close();
-        } catch (IOException ex) {
-            Log.e("~~~", ex.getMessage());
-        }
     }
 
     private void addTextSticker(String text, String textStyle, int align, String stringColor) {
@@ -778,4 +772,5 @@ public class MainActivity extends BaseActivity implements FilterDemoAdapter.Item
 
         }
     };
+
 }

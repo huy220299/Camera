@@ -17,6 +17,19 @@ public class Common {
     public static int getScreenWidth() {
         return Resources.getSystem().getDisplayMetrics().widthPixels;
     }
+
+    public static List<String> getNameOverlayFromPack(Context context, String namePack) {
+        List<String> list = new ArrayList<>();
+        AssetManager assetManager;
+        try {
+            assetManager = context.getAssets();
+            list = Arrays.asList(assetManager.list("overlay/"+namePack));
+        } catch (IOException e) {
+
+        }
+        return list;
+    }
+
     public int dpToPx(int dp, Context context) {
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
         return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
@@ -31,8 +44,8 @@ public class Common {
         return Drawable.createFromStream(inputStream, null);
     }
 
-    public static Drawable getStickerInAssets(Context context, String nameSticker ,String namePack ) throws IOException {
-        InputStream inputStream = context.getAssets().open("sticker/" + namePack + "/"+ nameSticker);
+    public static Drawable getDrawableInAssets(Context context, String folder, String namePack , String nameImage ) throws IOException {
+        InputStream inputStream = context.getAssets().open(folder+"/" + namePack + "/"+ nameImage);
         return Drawable.createFromStream(inputStream, null);
     }
 
@@ -52,7 +65,7 @@ public class Common {
         AssetManager assetManager;
         try {
             assetManager = context.getAssets();
-            list = Arrays.asList(assetManager.list("overley"));
+            list = Arrays.asList(assetManager.list("overlay"));
         } catch (IOException e) {
 
         }

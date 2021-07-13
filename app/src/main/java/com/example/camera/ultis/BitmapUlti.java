@@ -54,6 +54,13 @@ public class BitmapUlti {
         }
         return mBitmap;
     }
+    public static Bitmap loadBitmapFromView(View v) {
+        Bitmap b = Bitmap.createBitmap(v.getWidth(), v.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas c = new Canvas(b);
+//        v.layout(v.getLeft(), v.getTop(), v.getRight(), v.getBottom());
+        v.draw(c);
+        return b;
+    }
 
     public static byte[] convertToArray(Bitmap bitmap) {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
