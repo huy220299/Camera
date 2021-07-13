@@ -1,28 +1,30 @@
 package com.example.camera.activity;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.ColorDrawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Base64;
 import android.view.View;
 import android.widget.RelativeLayout;
 
 import com.example.camera.R;
-import com.example.camera.fragment.CustomDialogClass;
+import com.example.camera.dialog.CustomBackDialog;
 import com.example.camera.ultis.BitmapUlti;
-import com.example.camera.ultis.FileUtil;
 import com.theartofdev.edmodo.cropper.CropImageView;
-
-import java.io.IOException;
 
 public class CropImageActivity extends BaseActivity implements View.OnClickListener {
     private RelativeLayout ratioDefault, ratio11, ratio43, ratio169, shapeRectangle, shapeOval, showGrid, btnRotate;
     private RelativeLayout btnBack, btnDone;
     CropImageView imageView;
     Bitmap bmp;
+    private boolean isOval=false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,16 +43,16 @@ public class CropImageActivity extends BaseActivity implements View.OnClickListe
         shapeRectangle = findViewById(R.id.shapeRectangle);
         shapeOval = findViewById(R.id.shapeOval);
         showGrid = findViewById(R.id.showGrid);
-
-
         imageView = findViewById(R.id.imageView);
 
-        SharedPreferences preferences = getSharedPreferences("test",MODE_PRIVATE);
-        String image = preferences.getString("Image", "");
-
-        byte[] imageAsBytes = Base64.decode(image.getBytes(), Base64.DEFAULT);
-        Bitmap bmp = BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length);
-        imageView.setImageBitmap(bmp);
+//        SharedPreferences preferences = getSharedPreferences("test",MODE_PRIVATE);
+//        String image = preferences.getString("Image", "");
+//
+//        byte[] imageAsBytes = Base64.decode(image.getBytes(), Base64.DEFAULT);
+//        Bitmap bmp = BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length);
+//        Log.e("~~~", bmp.getWidth()+"");
+//        imageView.setImageBitmap(bmp);
+        new setBitmapImage().execute();
 
         btnRotate.setOnClickListener(this);
         ratioDefault.setOnClickListener(this);
@@ -64,17 +66,34 @@ public class CropImageActivity extends BaseActivity implements View.OnClickListe
         btnBack.setOnClickListener(this);
 
     }
+    class setBitmapImage extends AsyncTask<Void, Void, Void> {
+        @SuppressLint("WrongThread")
+        @Override
+        protected Void doInBackground(Void... voids) {
+            SharedPreferences preferences = getSharedPreferences("test",MODE_PRIVATE);
+            String image = preferences.getString("Image", "");
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+            byte[] imageAsBytes = Base64.decode(image.getBytes(), Base64.DEFAULT);
+             bmp = BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void unused) {
+
+            Handler handler = new Handler(Looper.getMainLooper());
+            handler.postAtTime(() -> {
+              imageView.setImageBitmap(bmp);
+
+            }, 500);
+
+        }
     }
 
     @Override
     public void onClick(View v) {
         Bitmap bm = imageView.getCroppedImage();
-        bm = BitmapUlti.createOvalBitmap(bm);
-
+        Bitmap bitmapOval= BitmapUlti.createOvalBitmap(bm);
         switch (v.getId()){
             case R.id.ratioDefault:
                 imageView.clearAspectRatio();
@@ -89,9 +108,11 @@ public class CropImageActivity extends BaseActivity implements View.OnClickListe
                 imageView.setAspectRatio(16,9);
                 break;
             case R.id.shapeRectangle:
+                isOval =false;
                 imageView.setCropShape(CropImageView.CropShape.RECTANGLE);
                 break;
             case R.id.shapeOval:
+                isOval=true;
                 imageView.setCropShape(CropImageView.CropShape.OVAL);
                 break;
             case R.id.showGrid:
@@ -105,19 +126,23 @@ public class CropImageActivity extends BaseActivity implements View.OnClickListe
                 imageView.rotateImage(90);
                 break;
             case R.id.btnDone:
-
-                try {
-                    FileUtil.saveImage(CropImageActivity.this,bm, String.valueOf(System.currentTimeMillis() % 1000));
-                } catch (IOException e) {
-                    e.printStackTrace();
+                String encoded;
+                if (isOval){
+                    encoded= Base64.encodeToString(BitmapUlti.convertToArray(bitmapOval), Base64.DEFAULT);
                 }
+                else {
+                     encoded = Base64.encodeToString(BitmapUlti.convertToArray(bm), Base64.DEFAULT);
+                }
+
+                SharedPreferences preferences = getSharedPreferences("test", MODE_PRIVATE);
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.putString("Image", encoded);
+                editor.apply();
+                startActivity(new Intent(CropImageActivity.this,MainActivity.class));
+                finish();
                 break;
             case R.id.btnBack:
-                Intent intent = new Intent();
-
-                intent.putExtra("resultBitmap",BitmapUlti.convertToArray(bm));
-                setResult(RESULT_OK,intent);
-                finish();
+                onBackPressed();
                 break;
 
             default:
@@ -129,7 +154,7 @@ public class CropImageActivity extends BaseActivity implements View.OnClickListe
 
     @Override
     public void onBackPressed() {
-        CustomDialogClass cdd=new CustomDialogClass(CropImageActivity.this);
+        CustomBackDialog cdd=new CustomBackDialog(CropImageActivity.this);
         cdd.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
         cdd.show();
     }

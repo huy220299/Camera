@@ -19,8 +19,8 @@ public class ListTextStyleAdapter extends RecyclerView.Adapter<ListTextStyleAdap
     Context context;
 
     ItemClickListener itemClickListener;
-    List<String> listStyle;
-    public  ListTextStyleAdapter( List<String> listStyle, ItemClickListener itemClickListener){
+    List<Typeface> listStyle;
+    public  ListTextStyleAdapter( List<Typeface> listStyle, ItemClickListener itemClickListener){
         this.listStyle =listStyle;
         this.itemClickListener = itemClickListener;
     }
@@ -47,8 +47,8 @@ public class ListTextStyleAdapter extends RecyclerView.Adapter<ListTextStyleAdap
 
 //        Typeface font = ResourcesCompat.getFont(context, listStyle.get(position));
 //        holder.textView.setTypeface(font);
-        Typeface font = Typeface.createFromAsset(context.getAssets(),"font/"+  listStyle.get(position));
-        holder.textView.setTypeface(font);
+
+        holder.textView.setTypeface(listStyle.get(position));
 //        holder.textView.setTypeface(font,Typeface.BOLD);
         holder.itemView.setOnClickListener(v -> {
             itemClickListener.onClick(v,position,"");

@@ -1,4 +1,4 @@
-package com.example.camera.fragment;
+package com.example.camera.dialog;
 
 import android.app.Dialog;
 import android.graphics.drawable.Drawable;
@@ -18,6 +18,7 @@ import androidx.viewpager.widget.ViewPager;
 import com.example.camera.R;
 import com.example.camera.adapter.StickerAdapter;
 import com.example.camera.adapter.ViewPagerAddFragmentsAdapter;
+import com.example.camera.fragment.DetailPackStickerFragment;
 import com.example.camera.ultis.Common;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
@@ -52,9 +53,6 @@ public class BottomSheetAddSticker extends BottomSheetDialogFragment {
         if (dialog != null) {
             View bottomSheet = dialog.findViewById(R.id.design_bottom_sheet);
             bottomSheet.getLayoutParams().height = Common.getScreenHeight();
-
-
-
         }
         View view = getView();
         view.post(() -> {

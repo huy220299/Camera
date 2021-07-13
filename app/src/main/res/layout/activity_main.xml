@@ -68,7 +68,7 @@
         app:overPinchable="true"
         app:horizontalPanEnabled="true"
         app:verticalPanEnabled="true"
-        app:zoomEnabled="true"
+        app:zoomEnabled="false"
         app:flingEnabled="false"
         app:scrollEnabled="true"
         app:oneFingerScrollEnabled="false"
@@ -116,6 +116,14 @@
                     />
 
             </com.xiaopo.flying.sticker.StickerView>
+            //add date
+            <ImageView
+                android:id="@+id/imageViewDate"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+
+                />
+            //add overlay
             <ImageView
                 android:id="@+id/imageViewFrame"
                 android:layout_width="match_parent"
@@ -123,6 +131,7 @@
                 android:alpha=".5"
 
                 />
+
         </RelativeLayout>
 
 
@@ -162,11 +171,11 @@
         //________________________________________________________
         // recycler view list filter
         <androidx.recyclerview.widget.RecyclerView
-            android:visibility="invisible"
+
             android:id="@+id/recyclerView"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+            app:layout_constraintBottom_toTopOf="@+id/linearLayoutIconAction"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -175,13 +184,13 @@
         //____________________overlay_______________________________
         <androidx.constraintlayout.widget.ConstraintLayout
             android:visibility="gone"
-            android:id="@+id/linearLayoutOverlay"
+            android:id="@+id/constraintLayoutOverlay"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            app:layout_constraintBottom_toBottomOf="@+id/recyclerView"
+            app:layout_constraintBottom_toTopOf="@+id/linearLayoutIconAction"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/recyclerView">
+            app:layout_constraintTop_toTopOf="parent">
            <com.google.android.material.tabs.TabLayout
                android:id="@+id/tabLayoutOverlay"
                android:layout_width="0dp"
@@ -211,7 +220,7 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:orientation="vertical"
-            app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+            app:layout_constraintBottom_toTopOf="@+id/linearLayoutIconAction"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -334,14 +343,45 @@
 
         </LinearLayout>
 
+        // AddDate
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:visibility="visible"
+            android:gravity="center"
+            android:id="@+id/linearLayoutAddText"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toTopOf="@+id/linearLayoutIconAction"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="@dimen/_100sdp"
+                android:layout_height="@dimen/_50sdp"
+                app:cardBackgroundColor="#87806c"
+                app:cardCornerRadius="10dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+
+
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
         //______________________________________________________
         // icon action
+
         <LinearLayout
-            android:id="@+id/linearLayout"
+            android:id="@+id/linearLayoutIconAction"
             android:layout_width="match_parent"
             android:layout_height="@dimen/option_height"
             android:orientation="horizontal"
-            android:weightSum="6"
+            android:layout_marginBottom="5dp"
+            android:weightSum="7"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -362,9 +402,8 @@
                     android:src="@drawable/magic" />
 
             </RelativeLayout>
-
             <RelativeLayout
-                android:id="@+id/btnAddSticker"
+                android:id="@+id/btnAddOverlay"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:background="@drawable/pressed"
@@ -374,9 +413,8 @@
                     android:layout_width="@dimen/icon_size"
                     android:layout_height="@dimen/icon_size"
                     android:layout_centerInParent="true"
-                    android:src="@drawable/image"
-                    app:tint="@color/white" />
-
+                    app:tint="@color/white"
+                    android:src="@drawable/overlay" />
             </RelativeLayout>
 
             <RelativeLayout
@@ -395,7 +433,7 @@
             </RelativeLayout>
 
             <RelativeLayout
-                android:id="@+id/btnAddDate"
+                android:id="@+id/btnAddSticker"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:background="@drawable/pressed"
@@ -405,8 +443,9 @@
                     android:layout_width="@dimen/icon_size"
                     android:layout_height="@dimen/icon_size"
                     android:layout_centerInParent="true"
-                    app:tint="@color/white"
-                    android:src="@drawable/calender" />
+                    android:src="@drawable/image"
+                    app:tint="@color/white" />
+
             </RelativeLayout>
 
             <RelativeLayout
@@ -424,6 +463,20 @@
                     app:tint="@color/white"
                     android:src="@drawable/text" />
 
+            </RelativeLayout>
+            <RelativeLayout
+                android:id="@+id/btnAddDate"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:background="@drawable/pressed"
+                android:layout_weight="1">
+
+            <ImageView
+                android:layout_width="@dimen/icon_size"
+                android:layout_height="@dimen/icon_size"
+                android:layout_centerInParent="true"
+                app:tint="@color/white"
+                android:src="@drawable/calender" />
             </RelativeLayout>
 
             <RelativeLayout

@@ -17,8 +17,8 @@ public class ZoomIconEvent implements StickerIconEvent {
 
   @Override public void onActionUp(StickerView stickerView, MotionEvent event) {
     if (stickerView.getOnStickerOperationListener() != null) {
-      stickerView.getOnStickerOperationListener()
-          .onStickerZoomFinished(stickerView.getCurrentSticker());
+//      stickerView.getOnStickerOperationListener()
+//          .onStickerZoomFinished(stickerView.getCurrentSticker());
     }
   }
 }

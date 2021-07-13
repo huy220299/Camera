@@ -312,7 +312,7 @@ public class StickerView extends FrameLayout {
       case MotionEvent.ACTION_POINTER_UP:
         if (currentMode == ActionMode.ZOOM_WITH_TWO_FINGER && handlingSticker != null) {
           if (onStickerOperationListener != null) {
-            onStickerOperationListener.onStickerZoomFinished(handlingSticker);
+//            onStickerOperationListener.onStickerZoomFinished(handlingSticker);
           }
         }
         currentMode = ActionMode.NONE;
@@ -351,7 +351,7 @@ public class StickerView extends FrameLayout {
         stickers.add(handlingSticker);
       }
       if (onStickerOperationListener != null){
-        onStickerOperationListener.onStickerTouchedDown(handlingSticker);
+//        onStickerOperationListener.onStickerTouchedDown(handlingSticker);
       }
     }
 
@@ -375,13 +375,13 @@ public class StickerView extends FrameLayout {
         && handlingSticker != null) {
       currentMode = ActionMode.CLICK;
       if (onStickerOperationListener != null) {
-        onStickerOperationListener.onStickerClicked(handlingSticker);
+//        onStickerOperationListener.onStickerClicked(handlingSticker);
       }
       if (currentTime - lastClickTime < minClickDelayTime) {
         if (onStickerOperationListener != null) {
           try {
             onStickerOperationListener.onStickerDoubleTapped(handlingSticker);
-            onStickerOperationListener.onTextStickerDoubleTapped((TextSticker) handlingSticker);
+//            onStickerOperationListener.onTextStickerDoubleTapped((TextSticker) handlingSticker);
           }catch (Exception e){
 
           }
@@ -392,7 +392,7 @@ public class StickerView extends FrameLayout {
 
     if (currentMode == ActionMode.DRAG && handlingSticker != null) {
       if (onStickerOperationListener != null) {
-        onStickerOperationListener.onStickerDragFinished(handlingSticker);
+//        onStickerOperationListener.onStickerDragFinished(handlingSticker);
       }
     }
 
@@ -631,7 +631,7 @@ public class StickerView extends FrameLayout {
       }
 
       if (onStickerOperationListener != null) {
-        onStickerOperationListener.onStickerFlipped(sticker);
+//        onStickerOperationListener.onStickerFlipped(sticker);
       }
 
       invalidate();
@@ -680,7 +680,7 @@ public class StickerView extends FrameLayout {
     if (stickers.contains(sticker)) {
       stickers.remove(sticker);
       if (onStickerOperationListener != null) {
-        onStickerOperationListener.onStickerDeleted(sticker);
+//        onStickerOperationListener.onStickerDeleted(sticker);
       }
       if (handlingSticker == sticker) {
         handlingSticker = null;
@@ -742,7 +742,7 @@ public class StickerView extends FrameLayout {
     handlingSticker = sticker;
     stickers.add(sticker);
     if (onStickerOperationListener != null) {
-      onStickerOperationListener.onStickerAdded(sticker);
+//      onStickerOperationListener.onStickerAdded(sticker);
     }
     invalidate();
   }
@@ -889,23 +889,23 @@ public class StickerView extends FrameLayout {
   }
 
   public interface OnStickerOperationListener {
-    void onStickerAdded(@NonNull Sticker sticker);
-
-    void onStickerClicked(@NonNull Sticker sticker);
-
-    void onStickerDeleted(@NonNull Sticker sticker);
-
-    void onStickerDragFinished(@NonNull Sticker sticker);
-
-    void onStickerTouchedDown(@NonNull Sticker sticker);
-
-    void onStickerZoomFinished(@NonNull Sticker sticker);
-
-    void onStickerFlipped(@NonNull Sticker sticker);
+//    void onStickerAdded(@NonNull Sticker sticker);
+//
+//    void onStickerClicked(@NonNull Sticker sticker);
+//
+//    void onStickerDeleted(@NonNull Sticker sticker);
+//
+//    void onStickerDragFinished(@NonNull Sticker sticker);
+//
+//    void onStickerTouchedDown(@NonNull Sticker sticker);
+//
+//    void onStickerZoomFinished(@NonNull Sticker sticker);
+//
+//    void onStickerFlipped(@NonNull Sticker sticker);
 
     void onStickerDoubleTapped(@NonNull Sticker sticker);
 
-    void onTextStickerDoubleTapped(@NonNull TextSticker textSticker);
+//    void onTextStickerDoubleTapped(@NonNull TextSticker textSticker);
   }
 
 }

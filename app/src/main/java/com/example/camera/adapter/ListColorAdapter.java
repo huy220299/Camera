@@ -1,7 +1,6 @@
 package com.example.camera.adapter;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,11 +12,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.camera.R;
 
 public class ListColorAdapter extends RecyclerView.Adapter<ListColorAdapter.ViewHolder>{
-    String[] listColor;
+    int[] listColor;
     Context context;
     FilterDemoAdapter.ItemClickListener itemClickListener;
 
-    public ListColorAdapter(String[] listColor, FilterDemoAdapter.ItemClickListener itemClickListener){
+    public ListColorAdapter(int[] listColor, FilterDemoAdapter.ItemClickListener itemClickListener){
         this.listColor = listColor;
         this.itemClickListener = itemClickListener;
     }
@@ -33,7 +32,7 @@ public class ListColorAdapter extends RecyclerView.Adapter<ListColorAdapter.View
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.cardView.setCardBackgroundColor(Color.parseColor(listColor[position]));
+        holder.cardView.setCardBackgroundColor((listColor[position]));
         holder.itemView.setOnClickListener(v -> {
             itemClickListener.onClick(v,position,"textColor");
         });

@@ -5,9 +5,9 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -15,9 +15,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 
 import com.example.camera.R;
-import com.example.camera.ultis.BitmapUlti;
-import com.example.camera.ultis.Common;
-import com.google.gson.Gson;
+import com.example.camera.dialog.CustomBackDialog;
 
 public class StartActivity extends BaseActivity {
     public static int REQUEST_CODE = 123;
@@ -54,6 +52,13 @@ public class StartActivity extends BaseActivity {
     @Override
     protected void onPause() {
         super.onPause();
+    }
+
+    @Override
+    public void onBackPressed() {
+        CustomBackDialog cdd=new CustomBackDialog(StartActivity.this,"Do you want to quit ?");
+        cdd.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        cdd.show();
     }
 
     private void checkPermissions(){

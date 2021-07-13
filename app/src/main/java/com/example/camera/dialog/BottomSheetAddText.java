@@ -1,13 +1,14 @@
-package com.example.camera.fragment;
+package com.example.camera.dialog;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.TextPaint;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,28 +35,42 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class BottomSheetAddText extends BottomSheetDialogFragment implements ListTextStyleAdapter.ItemClickListener {
+public class BottomSheetAddText extends BottomSheetDialogFragment  {
 
-    private Callback callback;
+
     EditText editText;
     private RelativeLayout btnDone, btnCancel, alignLeft, alignCenter, alignRight, btnBold;
     RecyclerView recyclerViewTextStyle, recyclerViewTextColor;
     ListTextStyleAdapter adapter;
     ListColorAdapter adapterColor;
     Context context;
-    private String currentStyle = "regular.ttf";
-    private String currentColor = "#000000";
-    private boolean isChangeFont=false, isChangeColor =false;
-    private int align, color;
+    private Typeface currentStyle  ;
+    private int currentColor = Color.BLACK;
+    private Paint.Align Align = Paint.Align.LEFT;
 
-    String type = "create";
     private EditTextCallback editTextCallback;
+    String textEdit="";
+    TextPaint textPaint;
+    int[] listColor = {
+            Color.BLACK,
+            Color.RED,
+            Color.YELLOW,
+            Color.GREEN,
+            Color.BLUE,
+            Color.CYAN,
+            Color.MAGENTA
 
-//    public BottomSheetAddText(int align, int color, EditTextCallback editTextCallback) {
-//        this.align = align;
-//        this.color = color;
-//        this.editTextCallback = editTextCallback;
-//    }
+    };
+
+    public BottomSheetAddText(String textEdit, TextPaint textPaint, EditTextCallback editTextCallback) {
+
+        this.editTextCallback = editTextCallback;
+        this.textEdit = textEdit;
+        this.textPaint = textPaint;
+    }
+    public BottomSheetAddText( EditTextCallback editTextCallback) {
+        this.editTextCallback = editTextCallback;
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -92,6 +107,7 @@ public class BottomSheetAddText extends BottomSheetDialogFragment implements Lis
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.bottom_sheet_layout_add_text, container, false);
 
+
         context = getContext();
         editText = v.findViewById(R.id.edtAddedText);
         btnDone = v.findViewById(R.id.btnDone);
@@ -100,88 +116,84 @@ public class BottomSheetAddText extends BottomSheetDialogFragment implements Lis
         alignCenter = v.findViewById(R.id.alignCenter);
         alignRight = v.findViewById(R.id.alignRight);
         btnBold = v.findViewById(R.id.btnBold);
-        Bundle getData = getArguments();
-        editText.setTextColor(Color.parseColor(currentColor));
-        if (getData!=null){
-            type = "edit";
-            editText.setTextColor(getData.getInt("color"));
-            editText.setText(getData.getString("text"));
-            switch (getData.getInt("align")){
-                case 0:
-                    editText.setGravity(Gravity.LEFT);
-                    break;
-                case 1:
+
+        currentStyle = Typeface.createFromAsset(context.getAssets(), "font/" + "regular.ttf");
+
+        if (textPaint!=null){
+            currentStyle = textPaint.getTypeface();
+            currentColor =  textPaint.getColor();
+            editText.setText(textEdit);
+            editText.setTextColor(currentColor);
+            editText.setTypeface(currentStyle);
+            switch (textPaint.getTextAlign()){
+                case CENTER:
                     editText.setGravity(Gravity.CENTER);
                     break;
-                case 2:
+                case RIGHT:
                     editText.setGravity(Gravity.RIGHT);
                     break;
+                case LEFT:
+                    editText.setGravity(Gravity.LEFT);
+                    break;
             }
-            align = getData.getInt("align");
 
+        }else {
+            editText.setTextColor(currentColor);
         }
 
-
         btnDone.setOnClickListener(v1 -> {
-            if (callback != null) {
-                Bundle bundle = new Bundle();
-                bundle.putString("text", editText.getText().toString());
-                bundle.putString("textStyle",currentStyle);
-                bundle.putString("textColor",currentColor);
-                bundle.putInt("align", align);
-                bundle.putBoolean("isChangeColor", isChangeColor);
-                bundle.putString("type", type);
-                bundle.putBoolean("isChangeFont",isChangeFont );
-                callback.onButtonClicked(v1, bundle);
-//                editTextCallback.edit_callback(color, editText.getText().toString());
+
+            if (editTextCallback!=null){
+                    TextPaint textPaint = new TextPaint();
+                    textPaint.setTextAlign(Align);
+                    textPaint.setColor(currentColor);
+                    textPaint.setTypeface(currentStyle);
+                    editTextCallback.edit_callback(editText.getText().toString(),textPaint);
             }
+
         });
         btnCancel.setOnClickListener(v1 -> {
-            if (callback != null) {
-                Bundle bundle = new Bundle();
-                bundle.putString("type", type);
-                callback.onButtonClicked(v1, bundle);
+            if (editTextCallback!=null){
+                editTextCallback.edit_callback(textEdit,textPaint);
             }
         });
         List<String> listFonts = getFontFromAssets(context);
+        List<Typeface> typefaceList = new ArrayList<>();
+        for (int i = 0; i < listFonts.size(); i++) {
+            typefaceList.add(Typeface.createFromAsset(context.getAssets(), "font/" + listFonts.get(i)) );
+        }
         recyclerViewTextStyle = v.findViewById(R.id.recyclerView);
-        adapter = new ListTextStyleAdapter(listFonts, (view, position, type) -> {
-            isChangeFont=true;
-            Typeface font = Typeface.createFromAsset(context.getAssets(), "font/" + getFontFromAssets(context).get(position));
-            editText.setTypeface(font);
-            currentStyle = getFontFromAssets(context).get(position);
+        adapter = new ListTextStyleAdapter(typefaceList, (view, position, type) -> {
+            currentStyle = typefaceList.get(position);
+            editText.setTypeface(currentStyle);
         });
         recyclerViewTextStyle.setAdapter(adapter);
         GridLayoutManager layoutManager = new GridLayoutManager(context, 4);
         recyclerViewTextStyle.setLayoutManager(layoutManager);
 
-        String[]  listColor = getResources().getStringArray(R.array.listColor);
         recyclerViewTextColor = v.findViewById(R.id.recyclerViewTextColor);
         adapterColor = new ListColorAdapter(listColor, (view, position, type) -> {
-            isChangeColor=true;
             currentColor = listColor[position];
-            editText.setTextColor(Color.parseColor(currentColor));
+            editText.setTextColor(currentColor);
         });
         recyclerViewTextColor.setAdapter(adapterColor);
         recyclerViewTextColor.setLayoutManager(new LinearLayoutManager(context, RecyclerView.HORIZONTAL,false));
 
         alignRight.setOnClickListener(v1 -> {
             editText.setGravity(Gravity.RIGHT);
-            align=2;
+            Align =Paint.Align.RIGHT;
         });
         alignLeft.setOnClickListener(v1 -> {
             editText.setGravity(Gravity.LEFT);
-            align=0;
+            Align =Paint.Align.LEFT;
         });
         alignCenter.setOnClickListener(v1 -> {
             editText.setGravity(Gravity.CENTER_HORIZONTAL);
-            align=1;
+            Align =Paint.Align.CENTER;
         });
         btnBold.setOnClickListener(v1 -> {
             editText.setTypeface(null, Typeface.BOLD);
         });
-
-
         return v;
     }
 
@@ -192,41 +204,9 @@ public class BottomSheetAddText extends BottomSheetDialogFragment implements Lis
             assetManager = context.getAssets();
             list = Arrays.asList(assetManager.list("font"));
         } catch (IOException e) {
-
         }
         return list;
 
     }
 
-    @Override
-    public void onClick(View view, int position, String type) {
-        if (type.equals("textStyle")){
-            Typeface font = Typeface.createFromAsset(context.getAssets(), "font/" + getFontFromAssets(context).get(position));
-            editText.setTypeface(font);
-            currentStyle = getFontFromAssets(context).get(position);
-        }else if (type.equals("textColor")){
-
-        }
-
-    }
-
-    public void changeData (int color){
-        this.color = color;
-    }
-
-    public interface Callback {
-        public void onButtonClicked(View view, Bundle bundle);
-    }
-
-    @Override
-    public void onAttach(Activity ac) {
-        super.onAttach(ac);
-        callback = (Callback) ac;
-    }
-
-    @Override
-    public void onDetach() {
-        callback = null;
-        super.onDetach();
-    }
 }

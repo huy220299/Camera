@@ -1,21 +1,47 @@
 package com.example.camera.ultis;
 
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Build;
+import android.util.Log;
 import android.view.View;
 
+import androidx.core.content.FileProvider;
+
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 public class BitmapUlti {
+    public static Bitmap mark(Bitmap src, String watermark) {
+        int w = src.getWidth();
+        int h = src.getHeight();
+        Bitmap result = Bitmap.createBitmap(w, h, src.getConfig());
+        Canvas canvas = new Canvas(result);
+        canvas.drawBitmap(src, 0, 0, null);
+        Paint paint = new Paint();
+        paint.setColor(Color.RED);
+        paint.setTextSize(18);
+        paint.setAntiAlias(true);
+//        paint.setUnderlineText(true);
+        canvas.drawText(watermark, 20, 25, paint);
+
+        return result;
+    }
     public static Bitmap createOvalBitmap(Bitmap bitmap){
         int width = bitmap.getWidth();
         int height = bitmap.getHeight();
@@ -35,7 +61,7 @@ public class BitmapUlti {
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
         canvas.drawBitmap(bitmap, 0, 0, paint);
 
-        bitmap.recycle();
+//        bitmap.recycle();
 
         return output;
     }
@@ -87,6 +113,7 @@ public class BitmapUlti {
     }
 
     public static Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight) {
+
         int width = bm.getWidth();
         int height = bm.getHeight();
         float scaleWidth = ((float) newWidth) / width;
@@ -99,7 +126,7 @@ public class BitmapUlti {
         // "RECREATE" THE NEW BITMAP
         Bitmap resizedBitmap = Bitmap.createBitmap(
                 bm, 0, 0, width, height, matrix, false);
-        bm.recycle();
+//        bm.recycle();   giai phong bo nho
         return resizedBitmap;
     }
 
@@ -180,6 +207,34 @@ public class BitmapUlti {
         return con;
     }
 
+    public static Bitmap drawTextToBitmap( String mText, int width, int height, String orientation) {
+        try {
+            Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(bitmap);
+            Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+
+            paint.setColor(Color.RED);
+
+            paint.setTextSize(16);
+
+            Rect bounds = new Rect();
+            paint.getTextBounds(mText, 0, mText.length(), bounds);
+            if (orientation.equals("vertical")){
+                canvas.rotate(270, 60, height-30);
+                canvas.drawText(mText, 60, height-30, paint);
+            }else {
+                canvas.rotate(0, width-bounds.width()-30, height-60);
+                canvas.drawText(mText, width-bounds.width()-30, height-60, paint);
+            }
+            return bitmap;
+        } catch (Exception e) {
+            // TODO: handle exception
+
+            return null;
+        }
+
+    }
+
     public static Bitmap adjustedBitmap(Bitmap bm, float brightness, float contrast, float saturation) {
         bm = bm.copy(Bitmap.Config.ARGB_8888,true);
        float b=brightness*3-150;        //convert from progress
@@ -245,6 +300,33 @@ public class BitmapUlti {
         Bitmap blurred = Bitmap.createBitmap(w, h, bmp.getConfig());
         blurred.setPixels(pix, 0, w, 0, 0, w, h);
         return blurred;
+    }
+
+    public static Uri saveImageToShare(Context context,Bitmap image) {
+        //TODO - Should be processed in another thread
+        File imagesFolder = new File(context.getCacheDir(), "images");
+        Uri uri = null;
+        try {
+            imagesFolder.mkdirs();
+            File file = new File(imagesFolder, "shared_image.png");
+
+            FileOutputStream stream = new FileOutputStream(file);
+            image.compress(Bitmap.CompressFormat.PNG, 90, stream);
+            stream.flush();
+            stream.close();
+            uri = FileProvider.getUriForFile(context, "com.example.camera", file);
+
+        } catch (IOException e) {
+            Log.d("~~~", "IOException while trying to write file for sharing: " + e.getMessage());
+        }
+        return uri;
+    }
+    public static void  shareImageUri(Context context,Uri uri){
+        Intent intent = new Intent(android.content.Intent.ACTION_SEND);
+        intent.putExtra(Intent.EXTRA_STREAM, uri);
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        intent.setType("image/png");
+        context.startActivity(intent);
     }
 
     protected static float cleanValue(float p_val, float p_limit) {

@@ -29,6 +29,27 @@ public class Common {
         }
         return list;
     }
+    public static Drawable[] getDrawableFromAssets(Context context, String nameFolder , String namePack){
+        AssetManager assetManager;
+        try {
+            // to reach asset
+            assetManager = context.getAssets();
+            // to get all item in dogs folder.
+            String[] images = assetManager.list(nameFolder+"/"+namePack);
+            // to keep all image
+            Drawable[] drawables = new Drawable[images.length];
+            // the loop read all image in dogs folder and  aa
+            for (int i = 0; i < images.length; i++) {
+                InputStream inputStream = context.getAssets().open(nameFolder+"/"+namePack+"/" + images[i]);
+                Drawable drawable = Drawable.createFromStream(inputStream, null);
+                drawables[i] = drawable;
+            }
+            return drawables;
+        } catch (IOException e) {
+            // you can print error or log.
+        }
+        return null;
+    }
 
     public int dpToPx(int dp, Context context) {
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
