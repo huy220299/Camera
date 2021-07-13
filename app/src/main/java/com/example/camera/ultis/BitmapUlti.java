@@ -215,7 +215,7 @@ public class BitmapUlti {
 
             paint.setColor(Color.RED);
 
-            paint.setTextSize(16);
+            paint.setTextSize(20);
 
             Rect bounds = new Rect();
             paint.getTextBounds(mText, 0, mText.length(), bounds);

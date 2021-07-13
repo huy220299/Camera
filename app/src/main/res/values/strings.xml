@@ -7,6 +7,8 @@
     <string name="camera">Camera</string>
     <string name="default_text_style">regular.ttf</string>
     <string name="default_text_color">#000000</string>
+    <string name="permission_should_be_accept">Permission should be accept!!!</string>
+    <string name="open_setting">Open settings</string>
     <string-array name="listColor">
         <item>#000000</item>
         <item>#FF0000</item>

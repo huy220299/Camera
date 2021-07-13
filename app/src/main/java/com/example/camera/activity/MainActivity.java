@@ -75,22 +75,24 @@ public class MainActivity extends BaseActivity implements FilterDemoAdapter.Item
     RecyclerView recyclerView;
     FilterDemoAdapter adapter;
     List<FilterData> filterDataList;
-    Bitmap mBitmap, bitmapFiltered;
+    private Bitmap mBitmap, bitmapFiltered, bitmapDate;
     private SeekBar seekBarFilter, seekBarBrightness, seekBarContrast, seekBarSaturation;
     private int currentBright = 50, currentContrast = 10, currentSaturation = 0;
-    private TextView tvBrightness, tvContrast, tvSaturation;
+    private TextView tvBrightness, tvContrast, tvSaturation, tvDate;
     private RelativeLayout btnSave, btnBack, btnMultiChange;
     private ImageView imageViewFrame, imageViewDate;
     private LinearLayout linearLayoutMultiChange;
 
 
+
     private RelativeLayout btnAddText, btnAddSticker, btnCrop, btnAddFilter, btnAddOverlay, btnAddDate;
-    private ConstraintLayout constraintLayoutOverlay;
+    private ConstraintLayout constraintLayoutOverlay, constraintLayoutAddDate;
 
     private boolean isVisibility = true, isDone;
     private StickerView stickerView;
     private BottomSheetAddText bottomSheetAddText;
     private BottomSheetAddSticker bottomSheetAddSticker;
+    private ImageView imageViewDone, imageViewVertical, imageViewLandscape;
 
 
     @Override
@@ -200,11 +202,16 @@ public class MainActivity extends BaseActivity implements FilterDemoAdapter.Item
     private void onActionEvent() {
 
         seekBarChange();
+
         btnAddDate.setOnClickListener(v -> {
+            constraintLayoutAddDate.setVisibility(View.VISIBLE);
+            recyclerView.setVisibility(View.GONE);
+            linearLayoutMultiChange.setVisibility(View.GONE);
+            constraintLayoutOverlay.setVisibility(View.GONE);
 
         });
         btnAddOverlay.setOnClickListener(v -> {
-
+            constraintLayoutAddDate.setVisibility(View.GONE);
             recyclerView.setVisibility(View.GONE);
             linearLayoutMultiChange.setVisibility(View.GONE);
             constraintLayoutOverlay.setVisibility(View.VISIBLE);
@@ -213,30 +220,29 @@ public class MainActivity extends BaseActivity implements FilterDemoAdapter.Item
         btnMultiChange.setOnClickListener(v ->
         {
             bitmapFiltered = mImageView.getBitmapData();
-            if (isVisibility) {
-                isVisibility = false;
+            if (linearLayoutMultiChange.getVisibility()!=View.VISIBLE) {
                 mImageView.setImageBitmap(mImageView.getBitmapData());
                 mImageView.setFilterWithConfig(BASIC_FILTER_CONFIG);
                 seekBarFilter.setVisibility(View.GONE);
                 recyclerView.setVisibility(View.GONE);
                 constraintLayoutOverlay.setVisibility(View.GONE);
+                constraintLayoutAddDate.setVisibility(View.GONE);
                 linearLayoutMultiChange.setVisibility(View.VISIBLE);
             } else {
-                isVisibility = true;
                 seekBarFilter.setVisibility(View.VISIBLE);
                 recyclerView.setVisibility(View.VISIBLE);
                 constraintLayoutOverlay.setVisibility(View.GONE);
                 linearLayoutMultiChange.setVisibility(View.GONE);
+                constraintLayoutAddDate.setVisibility(View.GONE);
             }
 
         });
         btnAddFilter.setOnClickListener(v -> {
-            if (!isVisibility) {
-                recyclerView.setVisibility(View.VISIBLE);
-                linearLayoutMultiChange.setVisibility(View.GONE);
-                constraintLayoutOverlay.setVisibility(View.GONE);
-                isVisibility = true;
-            }
+            recyclerView.setVisibility(View.VISIBLE);
+            linearLayoutMultiChange.setVisibility(View.GONE);
+            constraintLayoutOverlay.setVisibility(View.GONE);
+            constraintLayoutAddDate.setVisibility(View.GONE);
+
         });
         btnCrop.setOnClickListener(v -> {
             isDone = false;
@@ -262,7 +268,6 @@ public class MainActivity extends BaseActivity implements FilterDemoAdapter.Item
             btnAddText.setEnabled(false);
             Handler handler = new Handler(Looper.getMainLooper());
             handler.postDelayed(() -> btnAddText.setEnabled(true), 2000);
-
             Bundle bundle = new Bundle();
             bottomSheetAddSticker = new BottomSheetAddSticker();
             bottomSheetAddSticker.show(getSupportFragmentManager(), "ModalBottomSheet");
@@ -271,7 +276,6 @@ public class MainActivity extends BaseActivity implements FilterDemoAdapter.Item
         });
 
         stickerView.setOnStickerOperationListener(sticker -> {
-
             if (sticker instanceof TextSticker) {
                 stickerView.remove(sticker);
                 TextPaint textPaint = ((TextSticker) sticker).getTextPaint();
@@ -280,6 +284,20 @@ public class MainActivity extends BaseActivity implements FilterDemoAdapter.Item
                 bottomSheetAddText.show(getSupportFragmentManager(),"BottomSheet Add Text");
             }
         });
+
+        imageViewVertical.setOnClickListener(v -> {
+            bitmapDate = BitmapUlti.drawTextToBitmap(tvDate.getText().toString(), mBitmap.getWidth(), mBitmap.getHeight(), "vertical");
+            imageViewDate.setImageBitmap(bitmapDate);
+        });
+        imageViewLandscape.setOnClickListener(v -> {
+            bitmapDate = BitmapUlti.drawTextToBitmap(tvDate.getText().toString(), mBitmap.getWidth(), mBitmap.getHeight(), "horizontal");
+            imageViewDate.setImageBitmap(bitmapDate);
+        });
+        imageViewDone.setOnClickListener(v -> {
+            imageViewDate.setImageBitmap(null);
+        });
+
+
     }
 
     @Override
@@ -349,6 +367,13 @@ public class MainActivity extends BaseActivity implements FilterDemoAdapter.Item
             c.drawBitmap(bmFi, 0, 0, null);
             c.drawBitmap(fBitmap, 0, 0, null);
             try {
+                Bitmap bitmapDateFrame = ((BitmapDrawable)imageViewDate.getDrawable()).getBitmap();
+                bitmapDateFrame = BitmapUlti.getResizedBitmap(bitmapDateFrame,mBitmap.getWidth(),mBitmap.getHeight());
+                c.drawBitmap(bitmapDateFrame,0,0,null);
+            }catch (Exception e){
+                Log.e(TAG, new Gson().toJson(e));
+            }
+            try {
                 Bitmap bitmapOverlay = ((BitmapDrawable)imageViewFrame.getDrawable()).getBitmap();
                 bitmapOverlay = BitmapUlti.getResizedBitmap(bitmapOverlay,mBitmap.getWidth(),mBitmap.getHeight());
                 Paint alphaPaint = new Paint();
@@ -405,6 +430,10 @@ public class MainActivity extends BaseActivity implements FilterDemoAdapter.Item
         tvContrast = findViewById(R.id.tvContrast);
         tvSaturation = findViewById(R.id.tvSaturation);
         constraintLayoutOverlay = findViewById(R.id.constraintLayoutOverlay);
+        constraintLayoutAddDate = findViewById(R.id.constraintLayoutAddDate);
+        imageViewDone = findViewById(R.id.imageViewDone);
+        imageViewVertical = findViewById(R.id.imageViewVertical);
+        imageViewLandscape = findViewById(R.id.imageViewLandscape);
 
         //seekbar
         seekBarBrightness.setProgress(currentBright);
@@ -488,6 +517,11 @@ public class MainActivity extends BaseActivity implements FilterDemoAdapter.Item
         tabLayoutOverlay.setupWithViewPager(viewPagerOverlay);
         tabLayoutOverlay.setSmoothScrollingEnabled(true);
         for (int i = 0; i < list.size(); i++) Objects.requireNonNull(tabLayoutOverlay.getTabAt(i)).setText(list.get(i));
+
+        //show Layout add date
+        tvDate = findViewById(R.id.tvDate);
+        tvDate.setText(Common.getDate());
+
     }
 
     private void addTextSticker(String text, TextPaint textPaint) {
